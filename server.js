@@ -1,34 +1,51 @@
 const WebSocket = require('ws');
+const SalaBacarat = require('./SalaBacarat');
+const SalaFootballStudio = require('./SalaFootballStudio');
+const SalaBacboo = require('./SalaBacboo');
+const SalaRoleta = require('./SalaRoleta');
 
 const PORT = process.env.PORT || 3000;
 const wss = new WebSocket.Server({ port: PORT });
-const history = [];
-const MAX_HISTORY = 500;
 
-console.log(`Servidor WebSocket rodando na porta ${PORT}`);
+// criar salas fixas
+const salas = {
+  bacarat: [new SalaBacarat('bacarat1'), new SalaBacarat('bacarat2')],
+  footballStudio: [new SalaFootballStudio('football1')],
+  bacboo: [new SalaBacboo('bacboo1')],
+  roleta: [new SalaRoleta('roleta1'), new SalaRoleta('roleta2')]
+};
 
+// iniciar loop de rodadas
+Object.values(salas).flat().forEach(sala => sala.iniciarRodada());
+
+// conexão de clientes
 wss.on('connection', ws => {
-  console.log('Cliente conectado!');
+  let userSala = null;
 
-  // envia histórico inicial
-  ws.send(JSON.stringify({ type: "history", data: history }));
+  ws.on('message', message => {
+    const msg = JSON.parse(message);
 
-  // gera números aleatórios a cada 1s
-  const interval = setInterval(() => {
-    const num = Math.floor(Math.random() * 36);
-    history.push(num);
-    if (history.length > MAX_HISTORY) history.shift();
-
-    // envia para todos clientes
-    wss.clients.forEach(client => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify({ type: "newNumber", data: num }));
+    if (msg.type === 'joinRoom') {
+      const { tipo, room } = msg;
+      const sala = salas[tipo]?.find(s => s.nome === room);
+      if (!sala) {
+        ws.send(JSON.stringify({ type: "error", message: "Sala não existe" }));
+        return;
       }
-    });
-  }, 1000);
+      userSala = sala;
+      userSala.adicionarCliente(ws);
+    }
+
+    if (msg.type === 'getRooms') {
+      const result = {};
+      Object.keys(salas).forEach(tipo => result[tipo] = salas[tipo].map(s => s.nome));
+      ws.send(JSON.stringify({ type: "roomsList", data: result }));
+    }
+  });
 
   ws.on('close', () => {
-    console.log('Cliente desconectado');
-    clearInterval(interval);
+    if (userSala) userSala.removerCliente(ws);
   });
 });
+
+console.log(`Servidor WebSocket rodando na porta ${PORT}`);
