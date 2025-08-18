@@ -15,7 +15,7 @@ wss.on('connection', ws => {
 
   // gera números aleatórios a cada 1s
   const interval = setInterval(() => {
-    const num = Math.floor(Math.random() * 1000);
+    const num = Math.floor(Math.random() * 36);
     history.push(num);
     if (history.length > MAX_HISTORY) history.shift();
 
