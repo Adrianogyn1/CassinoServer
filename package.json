@@ -1,0 +1,12 @@
+{
+  "name": "random-server",
+  "version": "1.0.0",
+  "description": "Servidor WebSocket que gera números aleatórios 24/7",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.13.0"
+  }
+}
