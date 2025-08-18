@@ -10,10 +10,13 @@ class SalaBase {
   adicionarCliente(ws) {
     this.clients.add(ws);
     ws.send(JSON.stringify({ type: "history", data: this.history, tipo: this.tipo, room: this.nome }));
+    
+    broadcastUserCount();
   }
 
   removerCliente(ws) {
     this.clients.delete(ws);
+    broadcastUserCount();
   }
 
   async iniciarRodada() {
@@ -71,6 +74,12 @@ class SalaBase {
       }
     });
   }
+  
+  broadcastUserCount() {
+  const msg = JSON.stringify({ type: "userCount", data: { room: this.nome, count: this.clients.size } });
+  this.clients.forEach(c => {
+    if (c.readyState === c.OPEN) c.send(msg);
+  });}
 }
 
 module.exports = SalaBase;

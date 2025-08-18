@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Monitor de Salas</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 20px; }
+    h1 { text-align: center; }
+    .salas { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+    .sala {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    .status { font-size: 0.9em; color: gray; margin-top: 5px; }
+    .usuarios { font-weight: bold; margin-top: 5px; }
+    .resultados { margin-top: 10px; font-family: monospace; }
+    canvas { margin-top: 10px; max-width: 100%; }
+  </style>
+</head>
+<body>
+  <h1>Monitor de Salas</h1>
+  <div id="salas" class="salas"></div>
+
+  <script>
+    const ws = new WebSocket("ws://localhost:3000");
+    const salasDiv = document.getElementById("salas");
+
+    const salasInfo = {}; // guarda info localmente
+
+    ws.onopen = () => {
+      console.log("Conectado ao servidor!");
+      ws.send(JSON.stringify({ type: "getRooms" }));
+    };
+
+    ws.onmessage = (event) => {
+      const msg = JSON.parse(event.data);
+
+      if (msg.type === "roomsList") {
+        Object.keys(msg.data).forEach(tipo => {
+          msg.data[tipo].forEach(room => {
+            salasInfo[room] = { tipo, usuarios: 0, status: "Aguardando", history: [] };
+            render();
+            ws.send(JSON.stringify({ type: "joinRoom", tipo, room }));
+          });
+        });
+      }
+
+      if (msg.type === "status") {
+        const { room, status } = msg.data;
+        if (salasInfo[room]) {
+          salasInfo[room].status = status;
+          render();
+        }
+      }
+
+      if (msg.type === "history") {
+        const { room, data } = msg;
+        if (salasInfo[room]) {
+          salasInfo[room].history = data;
+          render();
+        }
+      }
+
+      if (msg.type === "roundResult") {
+        const { room, data } = msg;
+        if (salasInfo[room]) {
+          salasInfo[room].history.push(data);
+          if (salasInfo[room].history.length > 10) salasInfo[room].history.shift();
+          render();
+        }
+      }
+
+      if (msg.type === "userCount") {
+        const { room, count } = msg.data;
+        if (salasInfo[room]) {
+          salasInfo[room].usuarios = count;
+          render();
+        }
+      }
+    };
+
+    function render() {
+      salasDiv.innerHTML = "";
+      Object.keys(salasInfo).forEach(room => {
+        const sala = salasInfo[room];
+
+        salasDiv.innerHTML += `
+          <div class="sala" id="sala-${room}">
+            <h2>${sala.tipo.toUpperCase()} - ${room}</h2>
+            <div class="status">Status: ${sala.status}</div>
+            <div class="usuarios">Usuários: ${sala.usuarios}</div>
+            <div class="resultados">Histórico: ${formatarHistorico(sala.tipo, sala.history)}</div>
+            <canvas id="canvas-${room}" width="250" height="150"></canvas>
+          </div>
+        `;
+
+        desenharVisual(sala.tipo, sala.history, `canvas-${room}`);
+      });
+    }
+
+    function formatarHistorico(tipo, history) {
+      if (!history.length) return "-";
+      if (tipo === "Roleta") return history.join(", ");
+      if (tipo === "Baccarat" || tipo === "FootballStudio") return history.map(r => r.join(" ")).join(" | ");
+      if (tipo === "Bacbo") return history.map(r => `🎲${r[0]} 🎲${r[1]} vs 🎲${r[2]} 🎲${r[3]}`).join(" | ");
+      return history.join(", ");
+    }
+
+    function desenharVisual(tipo, history, canvasId) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (!history.length) return;
+      const ultimo = history[history.length - 1];
+
+      if (tipo === "Roleta") {
+        ctx.beginPath();
+        ctx.arc(100, 75, 50, 0, Math.PI * 2);
+        ctx.fillStyle = "#ddd";
+        ctx.fill();
+        ctx.fillStyle = "black";
+        ctx.font = "20px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText(ultimo, 100, 80);
+      }
+
+      if (tipo === "Baccarat" || tipo === "FootballStudio") {
+        ctx.fillStyle = "green";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "white";
+        ctx.font = "18px Arial";
+        ctx.fillText("Cartas: " + ultimo.join(" "), 10, 80);
+      }
+
+      if (tipo === "Bacbo") {
+        ctx.fillStyle = "#222";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "white";
+        ctx.font = "20px Arial";
+        ctx.fillText(`A: 🎲${ultimo[0]} 🎲${ultimo[1]}`, 10, 60);
+        ctx.fillText(`B: 🎲${ultimo[2]} 🎲${ultimo[3]}`, 10, 110);
+      }
+    }
+  </script>
+</body>
+</html>
