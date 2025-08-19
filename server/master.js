@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const SalaRoleta = require('./SalaRoleta');
-const SalaBacarat = require('./SalaBaccarat');
+//const SalaBacarat = require('./SalaBaccarat');
 const SalaBacboo = require('./SalaBacboo');
 
 const app = express();
@@ -13,7 +13,7 @@ app.use(express.static('public')); // serve Index.html e games/
 const salas = [
     new SalaRoleta('roleta1', 4001),
     new SalaRoleta('roleta2', 4002),
-    new SalaBacarat('baccarat1', 4003),
+    //new SalaBacarat('baccarat1', 4003),
     new SalaBacboo('bacboo1', 4004)
 ];
 
