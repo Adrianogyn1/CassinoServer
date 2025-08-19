@@ -3,7 +3,7 @@ const SalaBase = require('./SalaBase');
 class SalaBaccarat extends SalaBase {
     constructor(nome, porta) {
         super('Baccarat', nome, porta);
-        this.startServer();
+        //this.startServer();
         //this.startGameLoop();
     }
 
