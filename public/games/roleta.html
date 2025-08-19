@@ -12,7 +12,8 @@
 <script>
 const params = new URLSearchParams(window.location.search);
 const porta = params.get('porta');
-const socket = io(`http://localhost:${porta}`);
+const url = "https://cassinoserver-production.up.railway.app/";
+const socket = io(`${url}:${porta}`);
 
 const ul = document.getElementById('history');
 

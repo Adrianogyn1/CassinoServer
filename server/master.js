@@ -4,7 +4,7 @@ const SalaRoleta = require('./SalaRoleta');
 const SalaBaccarat = require('./SalaBaccarat');
 const SalaBacboo = require('./SalaBacboo');
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const app = express();
 
 app.use(express.static(path.join(__dirname, '../public')));

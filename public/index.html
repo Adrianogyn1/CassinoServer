@@ -13,7 +13,8 @@
 
 <script>
 async function loadRooms() {
-    const res = await fetch('/api/rooms');
+    var url = "https://cassinoserver-production.up.railway.app/";
+    const res = await fetch(url+'/api/rooms');
     const rooms = await res.json();
     const container = document.getElementById('salas');
     container.innerHTML = '';
