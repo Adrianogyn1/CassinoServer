@@ -1,3 +1,6 @@
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
 const WebSocket = require('ws');
 const SalaBacarat = require('./SalaBacarat');
 const SalaFootballStudio = require('./SalaFootballStudio');
@@ -5,9 +8,33 @@ const SalaBacboo = require('./SalaBacboo');
 const SalaRoleta = require('./SalaRoleta');
 
 const PORT = process.env.PORT || 3000;
-const wss = new WebSocket.Server({ port: PORT });
 
-console.log(`Servidor WebSocket rodando na porta ${PORT}`);
+// -----------------------------
+// Servidor HTTP para index.html
+// -----------------------------
+const server = http.createServer((req, res) => {
+    // Servir apenas a página inicial
+    if (req.url === '/' || req.url === '/index.html') {
+        const filePath = path.join(__dirname, 'index.html');
+        fs.readFile(filePath, (err, data) => {
+            if (err) {
+                res.writeHead(500);
+                res.end("Erro ao carregar a página");
+            } else {
+                res.writeHead(200, { "Content-Type": "text/html" });
+                res.end(data);
+            }
+        });
+    } else {
+        res.writeHead(404);
+        res.end("Página não encontrada");
+    }
+});
+
+// -----------------------------
+// WebSocket
+// -----------------------------
+const wss = new WebSocket.Server({ server });
 
 // -----------------------------
 // Criar salas fixas
@@ -50,7 +77,6 @@ wss.on('connection', ws => {
         }
 
         switch (msg.type) {
-            // Entrar na sala
             case 'joinRoom': {
                 const { tipo, room } = msg;
                 const sala = salas[tipo]?.find(s => s.nome === room);
@@ -65,7 +91,6 @@ wss.on('connection', ws => {
                 break;
             }
 
-            // Sair da sala
             case 'exitRoom': {
                 if (userSala) {
                     userSala.removerCliente(ws);
@@ -78,7 +103,6 @@ wss.on('connection', ws => {
                 break;
             }
 
-            // Listar salas
             case 'getRooms': {
                 const result = {};
                 Object.keys(salas).forEach(tipo => result[tipo] = salas[tipo].map(s => s.nome));
@@ -96,4 +120,11 @@ wss.on('connection', ws => {
         if (userSala) userSala.removerCliente(ws);
         console.log('Cliente desconectado');
     });
+});
+
+// -----------------------------
+// Iniciar servidor HTTP + WS
+// -----------------------------
+server.listen(PORT, () => {
+    console.log(`Servidor rodando na porta ${PORT}`);
 });
