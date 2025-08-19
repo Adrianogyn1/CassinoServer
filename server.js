@@ -8,11 +8,23 @@ const PORT = process.env.PORT || 3000;
 const wss = new WebSocket.Server({ port: PORT });
 
 // criar salas fixas
-const salas = {
-  bacarat: [new SalaBacarat('bacarat1'), new SalaBacarat('bacarat2')],
-  footballStudio: [new SalaFootballStudio('football1')],
+const salas = 
+{
+  bacarat: [
+    new SalaBacarat('bacarat1'), 
+    new SalaBacarat('bacarat2')
+  ],
+  footballStudio: [
+    new SalaFootballStudio('footballelvivo'),
+    new SalaFootballStudio('footballlive')
+    
+  ],
   bacboo: [new SalaBacboo('bacboo1')],
-  roleta: [new SalaRoleta('roleta1'), new SalaRoleta('roleta2')]
+  roleta: [
+  new SalaRoleta('roleta1'),
+  new SalaRoleta('roleta2')
+    
+  ]
 };
 
 // iniciar loop de rodadas
@@ -29,11 +41,13 @@ wss.on('connection', ws => {
       const { tipo, room } = msg;
       const sala = salas[tipo]?.find(s => s.nome === room);
       if (!sala) {
-        ws.send(JSON.stringify({ type: "error", message: "Sala não existe" }));
+        ws.send(JSON.stringify({ type: "error", error: "Sala não existe" }));
         return;
       }
       userSala = sala;
       userSala.adicionarCliente(ws);
+      ws.send(JSON.stringify({ type: "joinRoom", message: "sucess" }));
+      
     }
 
     if (msg.type === 'getRooms') {
