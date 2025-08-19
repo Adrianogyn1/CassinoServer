@@ -3,28 +3,64 @@
 <head>
 <meta charset="UTF-8">
 <title>Roleta</title>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h1 { text-align: center; }
+    #status { font-weight: bold; }
+    #error { color: red; margin-top: 10px; }
+    ul { list-style: none; padding: 0; }
+    li { padding: 5px 0; }
+</style>
 </head>
 <body>
 <h1>Roleta</h1>
+<div>Status: <span id="status">Aguardando</span></div>
+<div id="error"></div>
 <ul id="history"></ul>
 
 <script>
-const params = new URLSearchParams(window.location.search);
-const porta = params.get('porta');
-const url = "https://cassinoserver-production.up.railway.app/";
-const socket = io(`${url}:${porta}`);
+$(function() {
+    const params = new URLSearchParams(window.location.search);
+    const porta = params.get('porta');
+    const url = "https://cassinoserver-production.up.railway.app/";
+    const socket = io(`${url}:${porta}`);
 
-const ul = document.getElementById('history');
+    const $history = $('#history');
+    const $status = $('#status');
+    const $error = $('#error');
 
-socket.on('history', data => {
-    ul.innerHTML = data.map(r => `<li>${r}</li>`).join('');
-});
+    // Recebe histórico completo da sala
+    socket.on('history', data => {
+        $history.empty();
+        data.forEach(r => $history.append(`<li>${r}</li>`));
+    });
 
-socket.on('newResult', data => {
-    const li = document.createElement('li');
-    li.textContent = Array.isArray(data) ? data.join(' ') : data;
-    ul.appendChild(li);
+    // Recebe novos resultados
+    socket.on('newResult', data => {
+        const valor = Array.isArray(data.data) ? data.data.join(' ') : data.data;
+        $history.append(`<li>${valor}</li>`);
+        // manter apenas os últimos 20 resultados
+        if ($history.children().length > 20) {
+            $history.children().first().remove();
+        }
+    });
+
+    // Atualiza status da sala
+    socket.on('status', data => {
+        $status.text(data.data);
+    });
+
+    // Exibe erros
+    socket.on('error', data => {
+        $error.text(data.error || 'Erro desconhecido');
+    });
+
+    // Detecta desconexão
+    socket.on('disconnect', () => {
+        $status.text('Desconectado');
+    });
 });
 </script>
 </body>

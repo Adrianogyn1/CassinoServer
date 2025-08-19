@@ -7,8 +7,8 @@ class SalaBacboo extends SalaBase {
         this.startGameLoop();
     }
 
-    startGameLoop() {
-        setInterval(() => {
+    gerarResultado() {
+       // setInterval(() => {
             const resultado = [
                 Math.floor(Math.random() * 6) + 1,
                 Math.floor(Math.random() * 6) + 1,
@@ -16,7 +16,7 @@ class SalaBacboo extends SalaBase {
                 Math.floor(Math.random() * 6) + 1
             ]; // 2 dados para cada lado
             this.addResultado(resultado);
-        }, 5000);
+       // }, 5000);
     }
 }
 

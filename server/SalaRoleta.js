@@ -4,14 +4,14 @@ class SalaRoleta extends SalaBase {
     constructor(nome, porta) {
         super('Roleta', nome, porta);
         this.startServer();
-        this.startGameLoop();
+        //this.startGameLoop();
     }
 
-    startGameLoop() {
-        setInterval(() => {
+    gerarResultado() {
+       // setInterval(() => {
             const resultado = Math.floor(Math.random() * 36);
             this.addResultado(resultado);
-        }, 5000);
+        //}, 5000);
     }
 }
 
