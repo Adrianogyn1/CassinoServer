@@ -87,4 +87,4 @@ wss.on('connection', ws => {
 });
 
 console.log(`Servidor WebSocket rodando na porta ${PORT}`);
-setTimeout(Update, 1000);
+setInterval(Update, 1000);
