@@ -1,12 +1,13 @@
 {
-  "name": "random-server",
+  "name": "cassino-server",
   "version": "1.0.0",
-  "description": "Servidor WebSocket que gera números aleatórios 24/7",
-  "main": "server.js",
+  "description": "Servidor master com salas independentes de jogos (Roleta, Baccarat, Bacboo) usando Socket.IO",
+  "main": "server/master.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server/master.js"
   },
   "dependencies": {
-    "ws": "^8.13.0"
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2"
   }
 }
