@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const SalaRoleta = require('./SalaRoleta');
-const SalaBacarat = require('./SalaBacarat');
+const SalaBacarat = require('./SalaBaccarat');
 const SalaBacboo = require('./SalaBacboo');
 
 const app = express();
