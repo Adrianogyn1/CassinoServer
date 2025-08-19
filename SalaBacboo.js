@@ -14,7 +14,7 @@ class SalaBacboo extends SalaBase {
     this.broadcastNewData(dados);
 
     this.history.push(dados);
-    if (this.history.length > 500) this.history.shift();
+    if (this.history.length > 120) this.history.shift();
 
     this.clients.forEach(client => {
       if (client.readyState === WebSocket.OPEN) {

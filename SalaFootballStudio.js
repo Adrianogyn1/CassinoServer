@@ -27,7 +27,7 @@ class SalaFootballStudio extends SalaBase {
 
     const rodada = { jogador: cartasJogador, banqueiro: cartasBanqueiro };
     this.history.push(rodada);
-    if (this.history.length > 500) this.history.shift();
+    if (this.history.length > 120) this.history.shift();
 
     this.clients.forEach(client => {
       if (client.readyState === WebSocket.OPEN) {
