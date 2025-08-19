@@ -45,7 +45,7 @@ class SalaBase {
   // cada sala filha implementa seu próprio resultado
   async resultado() 
   {
-    throw new Error("Método resultado() precisa ser implementado na subclasse");
+ //   throw new Error("Método resultado() precisa ser implementado na subclasse");
   }
 
   pay(resultado, ms) {
