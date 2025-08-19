@@ -41,7 +41,7 @@ wss.on('connection', ws => {
       const { tipo, room } = msg;
       const sala = salas[tipo]?.find(s => s.nome === room);
       if (!sala) {
-        ws.send(JSON.stringify({ type: "error", error: "Sala não existe" }));
+        ws.send(JSON.stringify({ type: "error", error: "a sala "+room+" não existe" }));
         return;
       }
       userSala = sala;

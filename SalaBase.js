@@ -1,5 +1,6 @@
 class SalaBase {
-  constructor(tipo, nome) {
+  constructor(tipo, nome) 
+  {
     this.tipo = tipo;
     this.nome = nome;
     this.clients = new Set();
@@ -28,7 +29,8 @@ class SalaBase {
     }
   }
 
-  abrirApostas(ms) {
+  abrirApostas(ms) 
+  {
     this.status = 'aberta';
     this.broadcastStatus();
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -41,7 +43,8 @@ class SalaBase {
   }
 
   // cada sala filha implementa seu próprio resultado
-  async resultado() {
+  async resultado() 
+  {
     throw new Error("Método resultado() precisa ser implementado na subclasse");
   }
 
@@ -51,15 +54,19 @@ class SalaBase {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-  broadcastStatus() {
-    this.clients.forEach(client => {
-      if (client.readyState === WebSocket.OPEN) {
+  broadcastStatus() 
+  {
+    this.clients.forEach(client => 
+    {
+      if (client.readyState === WebSocket.OPEN) 
+      {
         client.send(JSON.stringify({ type: "status", data: this.status, tipo: this.tipo, room: this.nome }));
       }
     });
   }
 
-  broadcastNewCard(carta, destino) {
+  broadcastNewCard(carta, destino) 
+  {
     this.clients.forEach(client => {
       if (client.readyState === WebSocket.OPEN) {
         client.send(JSON.stringify({ type: "newCard", data: { carta, destino }, tipo: this.tipo, room: this.nome }));
