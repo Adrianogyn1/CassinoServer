@@ -12,7 +12,7 @@
 <script>
 const params = new URLSearchParams(window.location.search);
 const porta = params.get('porta');
-const url = "https://cassinoserver-production.up.railway.app/";
+const url = "wss://cassinoserver-production.up.railway.app";
 const socket = io(`${url}:${porta}`);
 
 const ul = document.getElementById('history');
