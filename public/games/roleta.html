@@ -24,7 +24,7 @@
 $(function() {
     const params = new URLSearchParams(window.location.search);
     const porta = params.get('porta');
-    const url = "wws://cassinoserver-production.up.railway.app";
+    const url = "wss://cassinoserver-production.up.railway.app";
     const socket = io(`${url}:${porta}`);
 
     const $history = $('#history');
