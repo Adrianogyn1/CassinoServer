@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Roleta</title>
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+<h1>Roleta</h1>
+<ul id="history"></ul>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const porta = params.get('porta');
+const socket = io(`http://localhost:${porta}`);
+
+const ul = document.getElementById('history');
+
+socket.on('history', data => {
+    ul.innerHTML = data.map(r => `<li>${r}</li>`).join('');
+});
+
+socket.on('newResult', data => {
+    const li = document.createElement('li');
+    li.textContent = Array.isArray(data) ? data.join(' ') : data;
+    ul.appendChild(li);
+});
+</script>
+</body>
+</html>

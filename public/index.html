@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Monitor de Salas</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container my-4">
+    <h1>Salas de Jogos</h1>
+    <div id="salas" class="row gy-3"></div>
+</div>
+
+<script>
+async function loadRooms() {
+    const res = await fetch('/api/rooms');
+    const rooms = await res.json();
+    const container = document.getElementById('salas');
+    container.innerHTML = '';
+    rooms.forEach(room => {
+        container.innerHTML += `
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <h5>${room.tipo} - ${room.nome}</h5>
+                    <p>Status: ${room.status}</p>
+                    <p>Histórico: ${room.history.join(', ')}</p>
+                    <a href="/games/${room.tipo.toLowerCase()}.html?porta=${room.porta}" class="btn btn-primary">Entrar</a>
+                </div>
+            </div>
+        `;
+    });
+}
+
+loadRooms();
+</script>
+</body>
+</html>
