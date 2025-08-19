@@ -22,10 +22,10 @@ class SalaBase {
 
   async iniciarRodada() {
     while (true) {
-      await this.abrirApostas(20000);
-      await this.fecharApostas(1000);
+      await this.abrirApostas(2000);
+      await this.fecharApostas(500);
       const resultado = await this.resultado();
-      await this.pay(resultado, 1000);
+      await this.pay(resultado, 500);
     }
   }
 
