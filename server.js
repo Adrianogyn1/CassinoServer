@@ -26,8 +26,12 @@ const salas = {
   ]
 };
 
+function Update() {
+  Object.values(salas).flat().forEach(sala => sala.Update());
+}
+
 // Iniciar loop de rodadas para todas as salas (único por sala)
-Object.values(salas).flat().forEach(sala => sala.iniciarRodada());
+//Object.values(salas).flat().forEach(sala => sala.iniciarRodada());
 
 // Conexão de clientes
 wss.on('connection', ws => {
@@ -83,3 +87,4 @@ wss.on('connection', ws => {
 });
 
 console.log(`Servidor WebSocket rodando na porta ${PORT}`);
+setTimeout(Update, 1000);

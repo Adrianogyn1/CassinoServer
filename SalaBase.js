@@ -7,6 +7,8 @@ class SalaBase
     this.clients = new Set();
     this.history = [];
     this.tempoAposta = 10;
+    this.tempoCurrent=0;
+    this.complete=true;
     this.status = 'aguardando'; // 'aberta', 'fechada', 'resultado', 'pagamento'
   }
   
@@ -34,6 +36,24 @@ class SalaBase
     }
   }
   
+  async  Update() 
+  {
+    if(!this.complete)return;
+    
+    this.tempoCurrent--;
+    if(this.tempoCurrent<=0)
+    {
+      this.complete=false;
+      await this.fecharApostas(500);
+      const resultado = await this.resultado();
+      await this.pay(resultado, 500);
+      this.tempoCurrent=this.tempoAposta;
+      this.complete=true;
+      this.abrirApostas(100);
+    }
+    return new Promise(resolve => setTimeout(resolve, 1));
+  }
+  
   abrirApostas(ms)
   {
     this.status = 'aberta';
@@ -51,7 +71,7 @@ class SalaBase
   // cada sala filha implementa seu próprio resultado
   async resultado()
   {
-    //   throw new Error("Método resultado() precisa ser implementado na subclasse");
+    //  throw new Error("Método resultado() precisa ser implementado na subclasse");
   }
   
   pay(resultado, ms)
