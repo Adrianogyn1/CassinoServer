@@ -86,7 +86,7 @@ class Baralho {
 
     Retirar() {
         if(this.deck.length<=0)
-        Embaralhar();
+       this.Embaralhar();
         
         return this.deck.shift();
     }
