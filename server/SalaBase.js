@@ -1,65 +1,76 @@
 class SalaBase {
-    constructor(tipo, nome, porta) {
-        this.tipo = tipo;
+    constructor(nome, tempoAposta = 20) {
         this.nome = nome;
-        this.porta = porta;
         this.history = [];
         this.status = 'aguardando';
-        this.io = null;
-        this.interval = null;
+        this.users = new Set();
+
+        this.tempoAposta = tempoAposta;
+        this.tempoAtual = tempoAposta; // começa cheio
     }
 
-    startServer() {
-        const { Server } = require('socket.io');
-        this.io = new Server(this.porta, { cors: { origin: "*" } });
-        console.log(`${this.nome} (${this.tipo}) rodando em porta ${this.porta}`);
-
-        this.io.on('connection', socket => {
-            console.log(`Cliente conectado na sala ${this.nome}`);
-
-            // envia histórico e status atuais
-            socket.emit('history', this.history);
-            socket.emit('status', this.status);
-
-            socket.on('disconnect', () => {
-                console.log(`Cliente desconectou da sala ${this.nome}`);
-            });
-        });
-
-        // iniciar rodada automaticamente
-        this.startRodadas();
+    forEachUser(callback) {
+        for (const user of this.users) {
+            if (user.connected) callback(user);
+        }
     }
 
-    startRodadas() {
-        // padrão: gerar resultado a cada 5s (subclasses podem sobrescrever)
-        this.interval = setInterval(() => {
-            const resultado = this.gerarResultado();
-            this.addResultado(resultado);
-        }, 5000);
-    }
-
-    gerarResultado() {
-        // método a ser sobrescrito por cada tipo de sala
-        throw new Error('gerarResultado() precisa ser implementado na subclasse');
-    }
-
-    addResultado(resultado) {
+    AddResultado(resultado) {
         this.history.push(resultado);
         if (this.history.length > 20) this.history.shift();
-
-        // envia para todos os clientes
-        if (this.io) this.io.emit('newResult', { room: this.nome, data: resultado });
+        this.forEachUser(user => user.emit('newResult', { room: this.nome, data: resultado }));
     }
 
-    updateStatus(status) {
-        this.status = status;
-        if (this.io) this.io.emit('status', { room: this.nome, status });
+    BroadcastStatus() {
+        this.forEachUser(user => user.emit('status', { room: this.nome, status: this.status }));
     }
 
-    stop() {
-        if (this.interval) clearInterval(this.interval);
-        if (this.io) this.io.close();
+    BroadcastTempo() {
+        this.forEachUser(user => user.emit('tempo', { room: this.nome, tempo: this.tempoAtual }));
+    }
+
+    AddUser(user) {
+        this.users.add(user);
+        user.emit('history', this.history);
+        user.emit('status', this.status);
+        user.emit('tempo', this.tempoAtual);
+    }
+
+    RemoveUser(user) {
+        this.users.delete(user);
+    }
+
+    async Start() {
+        while (true) {
+            if (this.status === 'aguardando' || this.status === 'apostas_aberta') {
+                this.status = 'apostas_aberta';
+                this.BroadcastStatus();
+
+                while (this.tempoAtual > 0) {
+                    this.BroadcastTempo();
+                    await this.Esperar(1000);
+                    this.tempoAtual--;
+                }
+
+                this.status = 'apostas_fechada';
+                this.BroadcastStatus();
+                await this.Esperar(1000);
+
+                this.GerarResultado();
+               
+
+                this.tempoAtual = this.tempoAposta; // reinicia contador
+                this.status = 'aguardando';
+                this.BroadcastStatus();
+            }
+        }
+    }
+
+    GerarResultado() {
+        throw new Error('GerarResultado() precisa ser implementado na subclasse');
+    }
+
+    Esperar(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
 }
-
-module.exports = SalaBase;

@@ -1,8 +1,8 @@
-const SalaBase = require('./SalaBase');
+/*const SalaBase = require('./SalaBase');
 
 class SalaBacboo extends SalaBase {
-    constructor(nome, porta) {
-        super('Bacboo', nome, porta);
+    constructor(nome, rota) {
+        super('Bacboo', nome, rota);
       //  this.startServer();
      //   this.startGameLoop();
     }
@@ -20,4 +20,4 @@ class SalaBacboo extends SalaBase {
     }
 }
 
-module.exports = SalaBacboo;
+module.exports = SalaBacboo;*/

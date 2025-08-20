@@ -1,4 +1,4 @@
-const SalaBase = require('./SalaBase');
+/*const SalaBase = require('./SalaBase');
 
 class SalaBaccarat extends SalaBase {
     constructor(nome, porta) {
@@ -18,4 +18,4 @@ class SalaBaccarat extends SalaBase {
     }
 }
 
-module.exports = SalaBaccarat;
+module.exports = SalaBaccarat;*/

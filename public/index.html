@@ -36,7 +36,7 @@ $(document).ready(function() {
                                 <h5>${room.tipo} - ${room.nome}</h5>
                                 <p>Status: ${room.status}</p>
                                 <p>Histórico: ${room.history.length ? room.history.join(', ') : '-'}</p>
-                                <a href="/games/${room.tipo.toLowerCase()}.html?porta=${room.porta}" class="btn btn-primary">Entrar</a>
+                                <a href="${room.tipo.toLowerCase()}.html?porta=${room.porta}" class="btn btn-primary">Entrar</a>
                             </div>
                         </div>
                     `);

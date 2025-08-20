@@ -1,36 +1,76 @@
 const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
 const cors = require('cors');
+
 const SalaRoleta = require('./SalaRoleta');
 //const SalaBacarat = require('./SalaBaccarat');
-const SalaBacboo = require('./SalaBacboo');
+//const SalaBacboo = require('./SalaBacboo');
 
 const app = express();
 app.use(express.json());
 app.use(cors()); // habilita CORS para todas as origens
 app.use(express.static('public')); // serve Index.html e games/
 
+
+//io
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: "*", // cuidado em produção
+        methods: ["GET", "POST"]
+    }
+});
+
+
+
 // criar salas
 const salas = [
-    new SalaRoleta('roleta1', 4001),
-    new SalaRoleta('roleta2', 4002),
+    new SalaRoleta('roleta1'),
+    new SalaRoleta('roleta2'),
     //new SalaBacarat('baccarat1', 4003),
-    new SalaBacboo('bacboo1', 4004)
+    //new SalaBacboo('bacboo1', 4004)
 ];
 
-// iniciar servidores de cada sala
-salas.forEach(s => s.startServer());
+// iniciar cada sala
+salas.forEach(s => s.Start());
 
 // API para listar salas
 app.get('/api/rooms', (req, res) => {
     const result = salas.map(s => ({
-        tipo: s.tipo,
         nome: s.nome,
-        porta: s.porta,
+        users: 0, //s.users.length,
         status: s.status,
-        history: s.history
+        history: s.history.splice(5)
     }));
     res.json(result);
 });
 
+//socket service
+io.on("connection", (socket) => 
+{
+    console.log("Novo usuário conectado:", socket.id);
+    
+    
+    // cliente informa para qual sala quer entrar
+    socket.on("joinRoom", (roomName) => {
+        const sala = salas.find(c => c.nome == roomName);
+        if (!sala) {
+            socket.emit("error", "Sala não encontrada");
+            return;
+        }
+        
+        sala.AddUser(socket);
+        
+        // quando sair
+        socket.on("disconnect", () => {
+            sala.RemoveUser(socket);
+            console.log("Usuário saiu:", socket.id, "da sala", roomName);
+        });
+    });
+});
+
+
+
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Servidor master rodando na porta ${PORT}`));
+server.listen(PORT, () => console.log(`Servidor master rodando na porta ${PORT}`));
