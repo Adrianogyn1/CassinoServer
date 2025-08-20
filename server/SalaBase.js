@@ -24,11 +24,11 @@ class SalaBase
     }
 
     BroadcastStatus() {
-        this.forEachUser(user => user.emit('status', { room: this.nome, status: this.status }));
+        this.forEachUser(user => user.emit('status', this.status ));
     }
 
     BroadcastTempo() {
-        this.forEachUser(user => user.emit('tempo', { room: this.nome, tempo: this.tempoAtual }));
+        this.forEachUser(user => user.emit('tempo', this.tempoAtual ));
     }
 
     AddUser(user) {
@@ -70,6 +70,16 @@ class SalaBase
 
     GerarResultado() {
         throw new Error('GerarResultado() precisa ser implementado na subclasse');
+    }
+    
+    GetInfo()
+    {
+        return {
+        nome: this.nome,
+        users: this.users.length, //s.users.length,
+        status: this.status,
+        history: this.history.splice(5)
+        };
     }
 
     Esperar(ms) {

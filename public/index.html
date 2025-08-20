@@ -30,13 +30,14 @@ $(document).ready(function() {
                 const container = $('#salas');
                 container.empty();
                 rooms.forEach(room => {
+                    room.game = "roleta";
                     container.append(`
                         <div class="col-md-4">
                             <div class="card p-3">
-                                <h5>${room.tipo} - ${room.nome}</h5>
+                                <h5>${room.nome}</h5>
                                 <p>Status: ${room.status}</p>
                                 <p>Histórico: ${room.history.length ? room.history.join(', ') : '-'}</p>
-                                <a href="${room.tipo.toLowerCase()}.html?porta=${room.porta}" class="btn btn-primary">Entrar</a>
+                                <a href="${room.game.toLowerCase()}.html?room=${room.nome}" class="btn btn-primary">Entrar</a>
                             </div>
                         </div>
                     `);
