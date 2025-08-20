@@ -26,8 +26,11 @@ const io = new Server(server, {
 
 // criar salas
 const salas = [
-    new SalaRoleta('roleta 1', 10),
-    new SalaRoleta('roleta 2',10),
+    new SalaRoleta('Immersiver', 10),
+    new SalaRoleta('Auto Roolete',10),
+    new SalaRoleta('Stake', 10),
+    new SalaRoleta('Brasileira',10),
+    
     //new SalaBacarat('baccarat1', 4003),
     //new SalaBacboo('bacboo1', 4004)
 ];
@@ -38,7 +41,7 @@ salas.forEach(s => s.Start());
 // API para listar salas
 app.get('/api/rooms', (req, res) => {
     const result = salas.map(s => (
-        s.GetInfo()
+        s.GetInfo
         /*{
         nome: s.nome,
         users: 0, //s.users.length,
