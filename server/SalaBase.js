@@ -1,5 +1,7 @@
-class SalaBase {
-    constructor(nome, tempoAposta) {
+class SalaBase
+{
+    constructor(nome, tempoAposta)
+    {
         this.nome = nome;
         this.history = [];
         this.status = 'aguardando';
@@ -74,3 +76,5 @@ class SalaBase {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 }
+
+module.exports = SalaBase;
