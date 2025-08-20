@@ -22,7 +22,7 @@ class SalaBase
     AddResultado(resultado) {
         this.history.push(resultado);
         if (this.history.length > 20) this.history.shift();
-        this.forEachUser(user => user.emit('newResult', {  data: resultado }));
+        this.forEachUser(user => user.emit('newResult', resultado ));
     }
 
     BroadcastStatus() {

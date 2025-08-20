@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Roleta Completa</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<style>
+  body { font-family: Arial, sans-serif; background:#0b5137; color:white; text-align:center; padding:20px; }
+  
+  .chips { margin-bottom:20px; }
+  .chip { display:inline-block; width:50px; height:50px; border-radius:50%; border:2px solid #fff;
+    line-height:50px; font-weight:bold; cursor:pointer; margin:5px; }
+  .chip.selected { border:3px solid yellow; box-shadow:0 0 10px yellow; }
+  .chip-10 { background:red; }
+  .chip-50 { background:blue; }
+  .chip-100 { background:green; }
+
+  .roulette { display:flex; justify-content:center; flex-direction:column; align-items:center; }
+
+  .row { display:flex; margin:2px; }
+
+  .cell { width:30px; height:30px; display:flex; align-items:center; justify-content:center;
+    border:1px solid #555; font-weight:bold; cursor:pointer; position:relative; }
+
+  .green { background:green; }
+  .red { background:dark#42445Ared; }
+  .black { background:black; }
+
+  .placed-chip { position:absolute; width:15px; height:15px; border-radius:50%;
+    border:2px solid #fff; background:o#42445Arange; font-size:6px; line-height:30px; text-align:center; pointer-events:none; }
+
+  .extras { display:flex; justify-content:center; flex-wrap:wrap; margin-top:10px; gap:10px; }
+  .extra-cell { background:#222; padding:10px 15px; cursor:pointer; min-width:80px; text-align:center; }
+
+  .dozen { background:#444; padding:10px 15px; margin:5px; cursor:pointer; display:inline-block; min-width:80px; }
+</style>
+</head>
+<body>
+
+<h2>Selecione sua ficha</h2>
+<div class="chips">
+  <div class="chip chip-10" data-value="10">10</div>
+  <div class="chip chip-50" data-value="50">50</div>
+  <div class="chip chip-100" data-value="100">100</div>
+</div>
+
+<h2>Mesa de Roleta</h2>
+<div class="roulette" id="roulette">
+
+  <!-- Row 0: Zero -->
+  <div class="row">
+    <div class="cell green" data-bet="0">0</div>
+  </div>
+
+  <!-- Ruas: 1–36 -->
+  <div id="streets"></div>
+
+  <!-- Dúzias -->
+  <div class="row" id="dozens"></div>
+
+  <!-- Apostas externas -->
+  <div class="extras">
+    <div class="extra-cell" data-bet="1-18">1 a 18</div>
+    <div class="extra-cell" data-bet="even">Par</div>
+    <div class="extra-cell" data-bet="red">Vermelho</div>
+    <div class="extra-cell" data-bet="black">Preto</div>
+    <div class="extra-cell" data-bet="odd">Ímpar</div>
+    <div class="extra-cell" data-bet="19-36">19 a 36</div>
+  </div>
+</div>
+
+<script>
+let selectedChipValue = null;
+const redNumbers = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
+
+$(".chip").on("click", function(){
+  $(".chip").removeClass("selected");
+  $(this).addClass("selected");
+  selectedChipValue = $(this).data("value");
+});
+
+// Monta as ruas de 1 a 36
+const streetsDiv = $("#streets");
+for(let i=1;i<=36;i+=3){
+  let rowDiv = $('<div class="row"></div>');
+  for(let j=0;j<3;j++){
+    let num = i+j;
+    let colorClass = redNumbers.includes(num) ? "red" : "black";
+    rowDiv.append(`<div class="cell ${colorClass}" data-bet="${num}">${num}</div>`);
+  }
+  streetsDiv.append(rowDiv);
+}
+
+// Dúzias
+const dozensDiv = $("#dozens");
+dozensDiv.append('<div class="dozen" data-bet="1st12">1ª Dúzia</div>');
+dozensDiv.append('<div class="dozen" data-bet="2nd12">2ª Dúzia</div>');
+dozensDiv.append('<div class="dozen" data-bet="3rd12">3ª Dúzia</div>');
+
+// Colocar fichas
+$(document).on("click", ".cell, .dozen, .extra-cell", function(){
+  if(!selectedChipValue){
+    alert("Selecione uma ficha antes!");
+    return;
+  }
+  $(this).find(".placed-chip").remove();
+  const chip = $("<div class='placed-chip'></div>").text(selectedChipValue);
+  $(this).append(chip);
+});
+</script>
+
+</body>
+</html>
