@@ -26,8 +26,8 @@ const io = new Server(server, {
 
 // criar salas
 const salas = [
-    new SalaRoleta('roleta1'),
-    new SalaRoleta('roleta2'),
+    new SalaRoleta('roleta 1', 10),
+    new SalaRoleta('roleta 2',10),
     //new SalaBacarat('baccarat1', 4003),
     //new SalaBacboo('bacboo1', 4004)
 ];

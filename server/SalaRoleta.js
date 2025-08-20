@@ -1,14 +1,20 @@
 const SalaBase = require('./SalaBase');
 
 class SalaRoleta extends SalaBase {
-    constructor(nome) 
-    {
-        super(nome,20);
+    constructor(nome, tempoAposta = 20) {
+        super(nome, tempoAposta);
     }
 
-    GerarResultado() 
-    {
-        const resultado = Math.floor(Math.random() * 36);
+    GerarResultado() {
+        const numero = Math.floor(Math.random() * 37);
+        const cor = numero === 0 ? "verde" : (numero % 2 === 0 ? "preto" : "vermelho");
+
+        const resultado = {
+            numero,
+            cor,
+            hora: new Date().toISOString()
+        };
+
         this.AddResultado(resultado);
     }
 }
