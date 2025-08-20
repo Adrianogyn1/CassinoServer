@@ -1,7 +1,7 @@
 const SalaBase = require('./SalaBase');
 
 class SalaRoleta extends SalaBase {
-    constructor(nome, tempoAposta = 20) {
+    constructor(nome, tempoAposta) {
         super(nome, tempoAposta);
     }
 

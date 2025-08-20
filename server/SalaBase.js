@@ -1,5 +1,5 @@
 class SalaBase {
-    constructor(nome, tempoAposta = 20) {
+    constructor(nome, tempoAposta) {
         this.nome = nome;
         this.history = [];
         this.status = 'aguardando';
