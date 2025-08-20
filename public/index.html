@@ -35,7 +35,7 @@ $(document).ready(function() {
                         <div class="col-md-4">
                             <div class="card p-3">
                                 <h5>${room.nome}</h5>
-                                <p>Status: ${room.status}</p>
+                                <p>Status: ${room.status} usuarios: ${room.users}</p>
                                 <p>Histórico: ${room.history.length ? room.history.join(', ') : '-'}</p>
                                 <a href="${room.game.toLowerCase()}.html?room=${room.nome}" class="btn btn-primary">Entrar</a>
                             </div>

@@ -1,7 +1,8 @@
 class SalaBase
 {
-    constructor(nome, tempoAposta)
+    constructor(game, nome, tempoAposta)
     {
+        this.game=game;
         this.nome = nome;
         this.history = [];
         this.status = 'aguardando';
@@ -20,7 +21,7 @@ class SalaBase
     AddResultado(resultado) {
         this.history.push(resultado);
         if (this.history.length > 20) this.history.shift();
-        this.forEachUser(user => user.emit('newResult', { room: this.nome, data: resultado }));
+        this.forEachUser(user => user.emit('newResult',  resultado ));
     }
 
     BroadcastStatus() {
@@ -75,6 +76,7 @@ class SalaBase
     GetInfo()
     {
         return {
+        game :this.game,
         nome: this.nome,
         users: this.users.length, //s.users.length,
         status: this.status,

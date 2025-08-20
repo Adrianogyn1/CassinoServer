@@ -4,7 +4,7 @@ class SalaRoleta extends SalaBase
 {
     constructor(nome, tempoAposta)
     {
-        super(nome, tempoAposta);
+        super("roleta",nome, tempoAposta);
     }
     
     GerarResultado()
@@ -22,10 +22,11 @@ class SalaRoleta extends SalaBase
     GetInfo()
     {
         return {
+            game :this.game,
             nome: this.nome,
             users: this.users.length, //s.users.length,
             status: this.status,
-            history: this.history.splice(10).map(n => n.numero)
+            history: this.history.map(n => n.numero).splice(5)
         };
     }
 }
