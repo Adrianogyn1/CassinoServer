@@ -7,6 +7,7 @@ class SalaBase
         this.history = [];
         this.status = 'aguardando';
         this.users = new Set();
+        this.userCount=0;
 
         this.tempoAposta = tempoAposta;
         this.tempoAtual = tempoAposta; // começa cheio
@@ -37,10 +38,12 @@ class SalaBase
         user.emit('history', this.history);
         user.emit('status', this.status);
         user.emit('tempo', this.tempoAtual);
+        this.userCount++;
     }
 
     RemoveUser(user) {
         this.users.delete(user);
+        this.userCount--;
     }
 
     async Start() {
@@ -78,7 +81,7 @@ class SalaBase
         return {
         game :this.game,
         nome: this.nome,
-        users: this.users.length, //s.users.length,
+        users:this.userCount, //s.users.length,
         status: this.status,
         history: this.history.splice(5)
         };

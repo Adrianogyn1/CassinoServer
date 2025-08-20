@@ -24,9 +24,9 @@ class SalaRoleta extends SalaBase
         return {
             game :this.game,
             nome: this.nome,
-            users: this.users.length, //s.users.length,
+            users: this.userCount, //s.users.length,
             status: this.status,
-            history: this.history.map(n => n.numero).splice(5)
+            history: this.history.map(n => n.numero)
         };
     }
 }
