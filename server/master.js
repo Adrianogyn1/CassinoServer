@@ -31,9 +31,9 @@ const salas = [
     new SalaRoleta('Stake'),
     new SalaRoleta('Brasileira'),
     
-    new SalaBacarat('Baccarat 1'),
-    new SalaBacarat('Baccarat 2'),
-    new SalaBacarat('Baccarat 3'),
+    new SalaBaccarat('Baccarat 1'),
+    new SalaBaccarat('Baccarat 2'),
+    new SalaBaccarat('Baccarat 3'),
     
     //new SalaBacboo('bacboo1', 4004)
 ];

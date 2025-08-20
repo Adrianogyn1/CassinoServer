@@ -3,14 +3,16 @@ const SalaBase = require('./SalaBase');
 class SalaBaccarat extends SalaBase {
     constructor(nome) {
         super("baccarat", nome, 20);
+        this.banker = new Set();
+        this.player = new Set();
     }
 
     async GerarResultado() 
     {
         
         this.AddResultado({
-            banker: {card1: 1, card2:2},
-            player: {card1: 1, card2:2},
+            banker: this.banker,
+            player: this.player,
             vencedor:"b",
             time: 0
         });
