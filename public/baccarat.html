@@ -18,6 +18,7 @@
 <body>
 <h1>Baccarat</h1>
 <div id="tempo"></div>
+<div id="round"></div>
 <div>Status: <span id="status">Aguardando</span></div>
 <div id="error"></div>
 <div id="log"></div>
@@ -33,6 +34,7 @@ $(function() {
     const $history = $('#history');
     const $status = $('#status');
     const $error = $('#error');
+    const $round = $('#round');
     const $log = $('#log');
     const $tempo = $('#tempo');
 
@@ -44,14 +46,14 @@ $(function() {
     // Recebe histórico completo da sala
     socket.on('history', data => {
         $history.empty();
-        data.forEach(r => $history.append(`<li>${r.numero}</li>`));
+        data.forEach(r => $history.append(`<b>${r.numero} </b>`));
         log("📜 Histórico carregado (" + data.length + " itens)");
     });
 
     // Recebe novos resultados
     socket.on('newResult', data => {
         const valor = data.vencedor;// Array.isArray(data.data) ? data.data.join(' ') : data.data;
-        $history.append(`<li>${valor}</li>`);
+        $history.append(`<b>${valor} </b>`);
         if ($history.children().length > 20) {
             $history.children().first().remove();
         }
@@ -63,6 +65,24 @@ $(function() {
         $status.text(data);
         log("ℹ️ Status: " +   data);
     });
+    socket.on('round', data => {
+    // Cria um novo elemento <div> com as cartas do player e banker
+    const div = document.createElement("div");
+    
+    // Monta o conteúdo: cartas do Player e Banker + vencedor
+    div.innerHTML = `
+        <strong>Player:</strong> ${data.player.map(c => c.val + c.nipe).join(", ")}<br>
+        <strong>Banker:</strong> ${data.banker.map(c => c.val + c.nipe).join(", ")}<br>
+        <strong>Vencedor:</strong> ${data.vencedor} | <small>${new Date(data.time).toLocaleTimeString()}</small>
+        <hr>
+    `;
+
+    // Adiciona no container $round
+    $round.append(div);
+
+    console.log("Round:", data);
+});
+
     
     socket.on('tempo', data => {
     $tempo.text(data);
