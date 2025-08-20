@@ -21,7 +21,7 @@
 <div>Status: <span id="status">Aguardando</span></div>
 <div id="error"></div>
 <div id="log"></div>
-<ul id="history"></ul>
+<div id="history"></div>
 
 <script>
 $(function() {
@@ -44,14 +44,14 @@ $(function() {
     // Recebe histórico completo da sala
     socket.on('history', data => {
         $history.empty();
-        data.forEach(r => $history.append(`<li>${r.numero}</li>`));
+        data.forEach(r => $history.append(`<b>${r.numero} </b>`));
         log("📜 Histórico carregado (" + data.length + " itens)");
     });
 
     // Recebe novos resultados
     socket.on('newResult', data => {
         const valor = data.numero;// Array.isArray(data.data) ? data.data.join(' ') : data.data;
-        $history.append(`<li>${valor}</li>`);
+        $history.append(`<b>${valor} </b>`);
         if ($history.children().length > 20) {
             $history.children().first().remove();
         }

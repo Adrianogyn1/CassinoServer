@@ -27,7 +27,7 @@ class SalaRoleta extends SalaBase
             nome: this.nome,
             users: this.userCount, //s.users.length,
             status: this.status,
-            history: this.history.map(n => n.numero).reverse().splice(10)
+            history: this.history.map(n => n.numero).reverse().splice(0,10)
         };
     }
 }

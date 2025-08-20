@@ -46,7 +46,7 @@ $(function() {
     // Recebe histórico completo da sala
     socket.on('history', data => {
         $history.empty();
-        data.forEach(r => $history.append(`<b>${r.numero} </b>`));
+        data.forEach(r => $history.append(`<b>${r.vencedor} </b>`));
         log("📜 Histórico carregado (" + data.length + " itens)");
     });
 
@@ -57,6 +57,9 @@ $(function() {
         if ($history.children().length > 20) {
             $history.children().first().remove();
         }
+        
+        
+    setTimeout(()=>{$round.html("");},4000);
         log("🎲 Novo resultado: " + valor);
     });
 
@@ -85,7 +88,9 @@ $(function() {
         <hr>
     `;
 
-    $rounds.prepend(div); // mostra o
+    $round.prepend(div); // mostra o
+    
+    
 
     console.log("Round:", data);
 });

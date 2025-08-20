@@ -87,7 +87,7 @@ class SalaBase
         nome: this.nome,
         users:this.userCount, //s.users.length,
         status: this.status,
-        history: this.history.splice(5)
+        history: this.history.reverse().splice(0,5)
         };
     }
 
