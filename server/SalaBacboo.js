@@ -45,6 +45,16 @@ class SalaBacboo extends SalaBase {
         this.player.complete = true;
         this.AddResultado(result);
     }
+    
+    GetInfo() {
+        return {
+            game: this.game,
+            nome: this.nome,
+            users: this.userCount,
+            status: this.status,
+            history: this.history.map(n => n.vencedor).reverse().slice(0, 10)
+        };
+    }
 }
 
 module.exports = SalaBacboo;
