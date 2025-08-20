@@ -94,7 +94,7 @@ class SalaBaccarat extends SalaBase {
         result.vencedor = (pTotal === bTotal) ? "d" : (pTotal > bTotal ? "p" : "b");
 
         this.AddResultado(result);
-        await this.Esperar(1000);
+        await this.Esperar(2000);
     }
 
     // calcula soma no Baccarat (último dígito)
