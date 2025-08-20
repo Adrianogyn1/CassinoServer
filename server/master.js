@@ -41,7 +41,7 @@ salas.forEach(s => s.Start());
 // API para listar salas
 app.get('/api/rooms', (req, res) => {
     const result = salas.map(s => (
-        s.GetInfo
+        s.GetInfo()
         /*{
         nome: s.nome,
         users: 0, //s.users.length,
