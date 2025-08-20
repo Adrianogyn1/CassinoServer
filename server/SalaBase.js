@@ -62,7 +62,7 @@ class SalaBase
                 this.BroadcastStatus();
                 await this.Esperar(1000);
 
-                this.GerarResultado();
+              await  this.GerarResultado();
                
 
                 this.tempoAtual = this.tempoAposta; // reinicia contador
@@ -72,7 +72,7 @@ class SalaBase
         }
     }
 
-    GerarResultado() {
+  async  GerarResultado() {
         throw new Error('GerarResultado() precisa ser implementado na subclasse');
     }
     

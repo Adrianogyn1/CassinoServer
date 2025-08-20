@@ -2,12 +2,12 @@ const SalaBase = require('./SalaBase');
 
 class SalaRoleta extends SalaBase
 {
-    constructor(nome, tempoAposta)
+    constructor(nome)
     {
-        super("roleta",nome, tempoAposta);
+        super("roleta",nome,20);
     }
     
-    GerarResultado()
+  async  GerarResultado()
     {
         const numero = Math.floor(Math.random() * 37);
         
@@ -17,6 +17,7 @@ class SalaRoleta extends SalaBase
         };
         
         this.AddResultado(resultado);
+        await this.Esperar(1000);
     }
     
     GetInfo()

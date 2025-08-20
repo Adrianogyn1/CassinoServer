@@ -1,21 +1,33 @@
-/*const SalaBase = require('./SalaBase');
+const SalaBase = require('./SalaBase');
 
 class SalaBaccarat extends SalaBase {
-    constructor(nome, porta) {
-        super('Baccarat', nome, porta);
-        //this.startServer();
-        //this.startGameLoop();
+    constructor(nome) {
+        super("baccarat", nome, 20);
     }
 
-    gerarResultado() {
-       // setInterval(() => {
-            const resultado = [
-                Math.floor(Math.random() * 13) + 1, // jogador
-                Math.floor(Math.random() * 13) + 1  // banqueiro
-            ];
-            this.addResultado(resultado);
-       // }, 5000);
+    async GerarResultado() 
+    {
+        
+        this.AddResultado({
+            banker: {card1: 1, card2:2},
+            player: {card1: 1, card2:2},
+            vencedor:"b",
+            time: 0
+        });
+        
+        await this.Esperar(1000);
+    }
+    
+    GetInfo()
+    {
+        return {
+            game :this.game,
+            nome: this.nome,
+            users: this.userCount, //s.users.length,
+            status: this.status,
+            history: this.history.map(n => n.vencedor).reverse().splice(10)
+        };
     }
 }
 
-module.exports = SalaBaccarat;*/
+module.exports = SalaBaccarat;

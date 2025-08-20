@@ -4,7 +4,7 @@ const { Server } = require('socket.io');
 const cors = require('cors');
 
 const SalaRoleta = require('./SalaRoleta');
-//const SalaBacarat = require('./SalaBaccarat');
+const SalaBaccarat = require('./SalaBaccarat');
 //const SalaBacboo = require('./SalaBacboo');
 
 const app = express();
@@ -26,12 +26,15 @@ const io = new Server(server, {
 
 // criar salas
 const salas = [
-    new SalaRoleta('Immersiver', 10),
-    new SalaRoleta('Auto Roolete',10),
-    new SalaRoleta('Stake', 10),
-    new SalaRoleta('Brasileira',10),
+    new SalaRoleta('Immersiver'),
+    new SalaRoleta('Auto Roolete'),
+    new SalaRoleta('Stake'),
+    new SalaRoleta('Brasileira'),
     
-    //new SalaBacarat('baccarat1', 4003),
+    new SalaBacarat('Baccarat 1'),
+    new SalaBacarat('Baccarat 2'),
+    new SalaBacarat('Baccarat 3'),
+    
     //new SalaBacboo('bacboo1', 4004)
 ];
 
