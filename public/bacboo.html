@@ -13,6 +13,11 @@
     #log { margin-top: 15px; padding: 10px; border: 1px solid #ccc; max-height: 200px; overflow-y: auto; font-size: 14px; background: #f9f9f9; }
     ul { list-style: none; padding: 0; }
     li { padding: 5px 0; }
+    
+    .round { margin-bottom: 20px; }
+  .hand { display: inline-block; margin-right: 50px; }
+  .dice { font-size: 2em; margin: 5px; display: inline-block; }
+  .winner { font-weight: bold; font-size: 1.5em; color: green; }
 </style>
 </head>
 <body>
@@ -38,6 +43,29 @@ $(function() {
     const $log = $('#log');
     const $tempo = $('#tempo');
 
+function AddDeck(data){
+    $round.html("");
+const div = document.createElement('div');
+    div.classList.add('round');
+
+    div.innerHTML = `
+        <div class="hand">
+            <strong>Player:</strong>
+            ${data.player.dados.map(d => `<span class="dice">${d}</span>`).join('')}
+            ${data.player.complete ? '' : '<em>(rolando...)</em>'}
+        </div>
+        <div class="hand">
+            <strong>Banker:</strong>
+            ${data.banker.dados.map(d => `<span class="dice">${d}</span>`).join('')}
+            ${data.banker.complete ? '' : '<em>(rolando...)</em>'}
+        </div>
+        ${data.player.complete && data.banker.complete ? `<div class="winner">Vencedor: ${data.vencedor.toUpperCase()}</div>` : ''}
+        <hr>
+    `;
+
+// Adiciona no container $round
+$round.append(div);
+}
     function log(msg) {
         $log.append(`<div>${msg}</div>`);
         $log.scrollTop($log[0].scrollHeight); // rola sempre pro final
@@ -58,7 +86,7 @@ $(function() {
             $history.children().first().remove();
         }
         
-        
+        AddDeck(data);
     setTimeout(()=>{$round.html("");},4000);
         log("🎲 Novo resultado: " + valor);
     });
@@ -69,24 +97,7 @@ $(function() {
         log("ℹ️ Status: " +   data);
     });
     socket.on('round', data => {
-    // Cria um novo elemento <div> com as cartas do player e banker
-    const div = document.createElement('div');
-    div.classList.add('round');
-
-    div.innerHTML = `
-        <div class="hand">
-            <strong>Player:</strong>
-            ${data.player.dados.map(d => `<span class="dice">${d}</span>`).join('')}
-            ${data.player.complete ? '' : '<em>(rolando...)</em>'}
-        </div>
-        <div class="hand">
-            <strong>Banker:</strong>
-            ${data.banker.dados.map(d => `<span class="dice">${d}</span>`).join('')}
-            ${data.banker.complete ? '' : '<em>(rolando...)</em>'}
-        </div>
-        ${data.player.complete && data.banker.complete ? `<div class="winner">Vencedor: ${data.vencedor.toUpperCase()}</div>` : ''}
-        <hr>
-    `;
+        AddDeck(data);
 
     $round.prepend(div); // mostra o
     

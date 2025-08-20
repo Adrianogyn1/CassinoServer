@@ -38,6 +38,22 @@ $(function() {
     const $log = $('#log');
     const $tempo = $('#tempo');
 
+function AddDeck(data){
+    $round.html("");
+// Cria um novo elemento <div> com as cartas do player e banker
+const div = document.createElement("div");
+
+// Monta o conteúdo: cartas do Player e Banker + vencedor
+div.innerHTML = `
+        <strong>Player:</strong> ${data.player.map(c => c.val + c.nipe).join(", ")}<br>
+        <strong>Banker:</strong> ${data.banker.map(c => c.val + c.nipe).join(", ")}<br>
+        <strong>Vencedor:</strong> ${data.vencedor} | <small>${new Date(data.time).toLocaleTimeString()}</small>
+        <hr>
+    `;
+
+// Adiciona no container $round
+$round.append(div);
+}
     function log(msg) {
         $log.append(`<div>${msg}</div>`);
         $log.scrollTop($log[0].scrollHeight); // rola sempre pro final
@@ -57,6 +73,7 @@ $(function() {
         if ($history.children().length > 20) {
             $history.children().first().remove();
         }
+        AddDeck(data);
         setTimeout(()=>{$round.html("");},4000);
         log("🎲 Novo resultado: " + valor);
     });
@@ -67,19 +84,7 @@ $(function() {
         log("ℹ️ Status: " +   data);
     });
     socket.on('round', data => {
-    // Cria um novo elemento <div> com as cartas do player e banker
-    const div = document.createElement("div");
-    
-    // Monta o conteúdo: cartas do Player e Banker + vencedor
-    div.innerHTML = `
-        <strong>Player:</strong> ${data.player.map(c => c.val + c.nipe).join(", ")}<br>
-        <strong>Banker:</strong> ${data.banker.map(c => c.val + c.nipe).join(", ")}<br>
-        <strong>Vencedor:</strong> ${data.vencedor} | <small>${new Date(data.time).toLocaleTimeString()}</small>
-        <hr>
-    `;
-
-    // Adiciona no container $round
-    $round.append(div);
+        AddDeck(data);
     
 
     console.log("Round:", data);

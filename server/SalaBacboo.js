@@ -25,12 +25,14 @@ class SalaBacboo extends SalaBase {
         for (let i = 0; i < 2; i++) {
             // player
             this.player.dados[i] = Math.floor(Math.random() * 6) + 1;
+            this.player.complete = i==1;
             result.player = { ...this.player };
             this.BroadcastParcial(result);
             await this.Esperar(500);
 
             // banker
             this.banker.dados[i] = Math.floor(Math.random() * 6) + 1;
+            this.banker.complete = i==1;
             result.banker = { ...this.banker };
             this.BroadcastParcial(result);
             await this.Esperar(1000);
