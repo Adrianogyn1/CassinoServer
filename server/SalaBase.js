@@ -32,6 +32,10 @@ class SalaBase
     BroadcastTempo() {
         this.forEachUser(user => user.emit('tempo', this.tempoAtual ));
     }
+    
+    BroadcastParcial(result) {
+        this.forEachUser(user => user.emit('round', result));
+    }
 
     AddUser(user) {
         this.users.add(user);

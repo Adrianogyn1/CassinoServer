@@ -5,7 +5,7 @@ const cors = require('cors');
 
 const SalaRoleta = require('./SalaRoleta');
 const SalaBaccarat = require('./SalaBaccarat');
-//const SalaBacboo = require('./SalaBacboo');
+const SalaBacboo = require('./SalaBacboo');
 
 const app = express();
 app.use(express.json());
@@ -34,8 +34,9 @@ const salas = [
     new SalaBaccarat('Baccarat 1'),
     new SalaBaccarat('Baccarat 2'),
     new SalaBaccarat('Baccarat 3'),
-    
-    //new SalaBacboo('bacboo1', 4004)
+    new SalaBaccarat('Stake Bacarat'),
+    new SalaBacboo('Bacboo Live'),
+    new SalaBacboo('Bacboo ao vivo')
 ];
 
 // iniciar cada sala
@@ -45,15 +46,6 @@ salas.forEach(s => s.Start());
 app.get('/api/rooms', (req, res) => {
     const result = salas.map(s => (
         s.GetInfo()
-        /*{
-        nome: s.nome,
-        users: 0, //s.users.length,
-        status: s.status,
-        history: s.history.splice(5)
-    
-            
-        }*/
-        
     ));
     res.json(result);
 });

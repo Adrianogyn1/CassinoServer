@@ -102,9 +102,7 @@ class SalaBaccarat extends SalaBase {
         return cartas.reduce((acc, c) => acc + c.valor, 0) % 10;
     }
 
-    BroadcastParcial(result) {
-        this.forEachUser(user => user.emit('round', result));
-    }
+    
 
     GetInfo() {
         return {
