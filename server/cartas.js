@@ -78,9 +78,16 @@ class Baralho {
             const j = Math.floor(Math.random() * (i + 1));
             [this.deck[i], this.deck[j]] = [this.deck[j], this.deck[i]];
         }
+        
+        //corta as cartas ?
+       // let rdn = Math.round(Math.random()*this.deck.length)+(40*qtd);
+      //  this.deck = this.deck.splice(0,rdn);
     }
 
     Retirar() {
+        if(this.deck.length<=0)
+        Embaralhar();
+        
         return this.deck.shift();
     }
 }
