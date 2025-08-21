@@ -2,25 +2,25 @@ const SalaBase = require('./SalaBase');
 const { Baralho } = require("./cartas.js");
 
 class SalaBaccarat extends SalaBase {
-    constructor(nome,image="") {
-        super("baccarat", nome, 20,image);
+    constructor(nome, image = "") {
+        super("baccarat", nome, 20, image);
         this.banker = [];
         this.player = [];
         this.baralho = new Baralho(6, "bc"); // 6 ou 8 baralhos
     }
-
+    
     async GerarResultado() {
         // reset mãos
         this.banker = [];
         this.player = [];
-
+        
         let result = {
             banker: this.banker,
             player: this.player,
             vencedor: "*",
             time: new Date().toISOString()
         };
-
+        
         // Player 2 cartas
         for (let i = 0; i < 2; i++) {
             let carta = this.baralho.Retirar();
@@ -29,7 +29,7 @@ class SalaBaccarat extends SalaBase {
             this.BroadcastParcial(result);
             await this.Esperar(500);
         }
-
+        
         // Banker 2 cartas
         for (let i = 0; i < 2; i++) {
             let carta = this.baralho.Retirar();
@@ -38,11 +38,11 @@ class SalaBaccarat extends SalaBase {
             this.BroadcastParcial(result);
             await this.Esperar(500);
         }
-
+        
         // calcula totais iniciais
         let pTotal = this.getTotal(this.player);
         let bTotal = this.getTotal(this.banker);
-
+        
         // natural? (8 ou 9)
         if (pTotal < 8 && bTotal < 8) {
             // Player compra 3ª carta se <= 5
@@ -55,7 +55,7 @@ class SalaBaccarat extends SalaBase {
                 await this.Esperar(500);
                 pTotal = this.getTotal(this.player);
             }
-
+            
             // Banker decide
             if (playerThird === null) {
                 // Player não comprou 3ª carta
@@ -82,37 +82,68 @@ class SalaBaccarat extends SalaBase {
                 } else if (bTotal === 6 && (v === 6 || v === 7)) {
                     this.banker.push(this.baralho.Retirar());
                 }
-
+                
                 result.banker = [...this.banker];
                 this.BroadcastParcial(result);
                 await this.Esperar(500);
                 bTotal = this.getTotal(this.banker);
             }
         }
-
+        
         // decisão final
         result.vencedor = (pTotal === bTotal) ? "d" : (pTotal > bTotal ? "p" : "b");
-
-        this.AddResultado(result);
+        
+        this.AddResultado(result); //atualiza e envia para todos
+        this.PayoutBets(result);
+        
         await this.Esperar(2000);
     }
-
+    
+    PayoutBets(result) {
+        this.bets.forEach(c => {
+            let valor = 0;
+            
+            if (result.vencedor === "b") {
+                // Banker venceu (com comissão de 5%)
+                valor = c.bet.banker + (c.bet.banker * 0.95);
+            }
+            else if (result.vencedor === "p") {
+                // Player venceu
+                valor = c.bet.player * 2;
+            }
+            else if (result.vencedor === "d") {
+                // Empate → devolve banker/player e paga Draw 8:1
+                valor = (c.bet.banker + c.bet.player) + (c.bet.draw * 8);
+            }
+            
+            if (valor > 0) {
+                this.SendPayout(c.user,  valor );
+            }
+        });
+        
+        // limpa apostas para próxima rodada
+        this.bets = [];
+    }
+    
+    
+    
+    
     // calcula soma no Baccarat (último dígito)
     getTotal(cartas) {
         return cartas.reduce((acc, c) => acc + c.valor, 0) % 10;
     }
     
     
-
     
-
+    
+    
     GetInfo() {
         return {
             game: this.game,
             nome: this.nome,
             users: this.userCount,
             status: this.status,
-            image:this.image,
+            image: this.image,
             history: this.history.map(n => n.vencedor).reverse().slice(0, 10)
         };
     }

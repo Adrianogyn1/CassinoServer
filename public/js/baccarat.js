@@ -14,13 +14,27 @@ $(function() {
         error: $('#error')
     };
     
-        // ================= SOCKET =================
+
     const params = new URLSearchParams(window.location.search);
     const $roomName = params.get('room');
     const socket = io("https://cassinoserver-production.up.railway.app");
     const myHistorico = [];
 
     // ================= BET FUNCTIONS =================
+    function LimparAposta() {
+$el.betBoxes.each(function() {
+    $(this).find(".chip").remove();
+});
+    }
+    
+    function DobrarAposta(param) {
+
+    }
+    
+    function VoltarAposta(){
+
+    }
+    
     function updateBet() {
         $el.betBoxes.each(function() {
             const id = $(this).attr("id");
@@ -32,8 +46,8 @@ $(function() {
             if (id.includes("draw")) bet.draw = total;
         });
         bet.total = bet.player + bet.banker + bet.draw;
-       socket.emit("myBet",bet);
-        console.log(bet);
+       socket.emit("mybet",bet);
+        console.log();
     }
 
     function addChip(value, container) {
@@ -133,6 +147,7 @@ $(function() {
         $el.log.scrollTop($el.log[0].scrollHeight);
     }
 
+        // ================= SOCKET =================
     socket.on('connect', () => { 
         $el.status.text("Conectado"); 
         socket.emit("joinRoom",$roomName); 
@@ -154,7 +169,8 @@ $(function() {
         setTimeout(()=>{$el.playerDeck.empty(); $el.bankerDeck.empty();},4000);
         log(`🎲 Novo resultado ${data.vencedor}`);
     });
-    socket.on('betAceira', data=>{console.log("bet aceita");});
+    socket.on('registerBet', data=>{log("bet aceita");});
+    socket.on('payout', data=>{log("ganou: "+data);LimparAposta();});
     socket.on('round', addDeck);
     socket.on('tempo', data => $el.tempo.text(data));
     socket.on('status', data => $el.status.text(data));

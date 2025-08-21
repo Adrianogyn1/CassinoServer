@@ -70,7 +70,7 @@ io.on("connection", (socket) =>
         //bet
         socket.on("mybet", (data) =>
         {
-            sala.PlaceBet(data, socket);
+            sala.RegisterBet(data, socket);
         });
         // quando sair
         socket.on("disconnect", () => {
