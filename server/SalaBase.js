@@ -1,6 +1,6 @@
 class SalaBase
 {
-    constructor(game, nome, tempoAposta)
+    constructor(game, nome, tempoAposta,image="")
     {
         this.game=game;
         this.nome = nome;
@@ -8,6 +8,8 @@ class SalaBase
         this.status = 'aguardando';
         this.users = new Set();
         this.userCount=0;
+        this.bets = [];
+        this.image=image;
 
         this.tempoAposta = tempoAposta;
         this.tempoAtual = tempoAposta; // começa cheio
@@ -48,6 +50,11 @@ class SalaBase
     RemoveUser(user) {
         this.users.delete(user);
         this.userCount--;
+    }
+    
+    PlaceBet(bet,user){
+        this.bets.push({bet:bet,user:user});
+        user.emit("betAceita",true);
     }
 
     async Start() {

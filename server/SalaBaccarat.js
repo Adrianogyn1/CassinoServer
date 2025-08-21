@@ -2,8 +2,8 @@ const SalaBase = require('./SalaBase');
 const { Baralho } = require("./cartas.js");
 
 class SalaBaccarat extends SalaBase {
-    constructor(nome) {
-        super("baccarat", nome, 20);
+    constructor(nome,image="") {
+        super("baccarat", nome, 20,image);
         this.banker = [];
         this.player = [];
         this.baralho = new Baralho(6, "bc"); // 6 ou 8 baralhos
@@ -101,6 +101,8 @@ class SalaBaccarat extends SalaBase {
     getTotal(cartas) {
         return cartas.reduce((acc, c) => acc + c.valor, 0) % 10;
     }
+    
+    
 
     
 
@@ -110,6 +112,7 @@ class SalaBaccarat extends SalaBase {
             nome: this.nome,
             users: this.userCount,
             status: this.status,
+            image:this.image,
             history: this.history.map(n => n.vencedor).reverse().slice(0, 10)
         };
     }

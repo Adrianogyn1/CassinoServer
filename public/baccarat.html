@@ -4,203 +4,145 @@
 <head>
     <meta charset="UTF-8">
     <title>Baccarat</title>
-      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+    
+    
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <link rel="stylesheet" href="styles/baccarat.css">
+    
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+    .chip1{background:#565656;}
+     .chip2{background:#00EEBB;}
+     
+        .chip {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: 6px dashed #fff;
+        background: var(--chip-bg, #e11d48); /* fundo base (rosa/vermelho por padrão) */
+        color: #fff;
+        font-weight: 700;
+        font-size:12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        cursor: pointer;
+        user-select: none;
+        box-shadow: 0 2px 6px rgba(0,0,0,.25);
+        overflow: hidden;
         }
         
-        h1 {
-            text-align: center;
+        /* gomos decorativos */
+        .chip::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: repeating-conic-gradient(
+        from 0deg,
+        rgba(255,255,255,0.25) 0deg 15deg, /* gomo claro */
+        transparent 15deg 30deg /* espaço vazio */
+        );
+        mix-blend-mode: overlay; /* mescla com a cor da ficha */
         }
         
-        #status {
-            font-weight: bold;
+        /* anel interno */
+        .chip::after {
+        content: "";
+        position: absolute;
+        inset: 8px;
+        border-radius: 50%;
+        border: 2px solid rgba(255,255,255,.4);
         }
         
-        #error {
-            color: red;
-            margin-top: 10px;
-        }
+        </style>
         
-        #log {
-            margin-top: 15px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            max-height: 200px;
-            overflow-y: auto;
-            font-size: 14px;
-            background: #f9f9f9;
-        }
         
-        ul {
-            list-style: none;
-            padding: 0;
-        }
         
-        li {
-            padding: 5px 0;
-        }
-    </style>
 </head>
 
-<body>
+<body class="bg-success text-light p-4">
     <h1>Baccarat</h1>
     <div id="tempo"></div>
-    <div id="round" class="row justify-content-center"></div>
+    
     <div>Status: <span id="status">Aguardando</span></div>
     <div id="error"></div>
+    
+    <div id="deck" class="container mt-4">
+        <div class="row justify-content-center align-items-start">
+            
+            <!-- Player -->
+            <div class="col-auto text-center">
+                <strong>Player:</strong>
+                <div id="player" class="d-flex flex-row justify-content-center gap-2 mt-2"></div>
+            </div>
+            
+            <!-- Banker -->
+            <div class="col-auto text-center">
+                <strong>Banker:</strong>
+                <div id="banker" class="d-flex flex-row justify-content-center gap-2 mt-2"></div>
+            </div>
+            
+        </div>
+    </div>
+    <div id="chip-area" class="d-flex justify-content-center gap-2 mt-3 flex-wrap">
+         <div class="chip" style="--chip-bg:#565656" data-value="1">1</div>
+        <div class="chip" style="--chip-bg:#00EEBB" data-value="2.50">2.50</div>
+        <div class="chip" style="--chip-bg:#2563eb" data-value="10">10</div>
+        <div class="chip" style="--chip-bg:#16a34a" data-value="50">50</div>
+        <div class="chip" style="--chip-bg:#d97706" data-value="100">100</div>
+    </div>
+    
+    <div id="bet-area" class="d-flex justify-content-center gap-3 mt-4">
+        <div id="bet_player" class="bet-box p-3 rounded bg-primary text-light text-center" data-total="0">
+            <strong>Player</strong>
+            <div class="bet-amount mt-2"></div>
+        </div>
+        <div id="bet_draw" class="bet-box p-3 rounded bg-success text-light text-center" data-total="0">
+            <strong>Draw</strong>
+            <div class="bet-amount mt-2"></div>
+        </div>
+        <div id="bet_banker" class="bet-box p-3 rounded bg-danger text-light text-center" data-total="0">
+            <strong>Banker</strong>
+            <div class="bet-amount mt-2"></div>
+        </div>
+    </div>
+    
+    
+    
+    <div id="historico-container" style="overflow-x:auto; width:100%; border:1px solid #ccc; padding:5px;">
+        <div id="historico" class="d-flex align-items-end" style="gap:5px; height:200px; max-height: 200; background-color: whitesmoke;"></div>
+    </div>
+    
+    
+    
+    
+    
     <div id="log"></div>
     <ul id="history"></ul>
     
     <script>
-        $(function() {
-            const params = new URLSearchParams(window.location.search);
-            const $roomName = params.get('room');
-            const url = "https://cassinoserver-production.up.railway.app";
-            const socket = io(url);
-            
-            const $history = $('#history');
-            const $status = $('#status');
-            const $error = $('#error');
-            const $round = $('#round');
-            const $log = $('#log');
-            const $tempo = $('#tempo');
-            
-            function AddDeck(data) {
-                $round.html("");
-                // Cria um novo elemento <div> com as cartas do player e banker
-                const div = document.createElement("div");
-                
-                // Monta o conteúdo: cartas do Player e Banker + vencedor
-                div.innerHTML = `
-                    <div class="col justify-content-center">
-                        <strong>Player:</strong>
-                            ${data.player.map(c => renderCarta(c))}
-                   </div>
-                   
-                   <div class="col">
-                        <strong>Banker:</strong> 
-                        ${data.banker.map(c => renderCarta(c))}
-                    </div>
-                    <strong>Vencedor:</strong> ${data.vencedor} | <small>${new Date(data.time).toLocaleTimeString()}</small>
-                    <hr>
-                `;
-                
-                // Adiciona no container $round
-               $round.append(div);
-              //  var cc= data.player.map(c=>renderCarta(c));
-            //    $round.append(cc);
-            }
-            
-            function renderCarta(carta) {
-                const cor = (carta.nipe === "♥" || carta.nipe === "♦") ? "text-danger" : "text-dark";
-                return `
-        <div class="col-auto mb-2">
-          <div class="card border-dark bg-white text-center d-flex flex-column justify-content-between" style="width: 5rem; height: 7rem;">
-            
-            <!-- Topo esquerdo -->
-            <div class="d-flex justify-content-start p-1">
-              <span class="${cor} fw-bold">${carta.val}${carta.nipe}</span>
-            </div>
-
-            <!-- Centro -->
-            <div class="d-flex align-items-center justify-content-center flex-grow-1">
-              <span class="${cor} fs-2">${carta.nipe}</span>
-            </div>
-
-            <!-- Base direita -->
-            <div class="d-flex justify-content-end p-1">
-              <span class="${cor} fw-bold" style="transform: rotate(180deg);">${carta.val}${carta.nipe}</span>
-            </div>
-
-          </div>
-        </div>
-      `;
-            }
-            
-            
-            
-            
-            function log(msg) {
-                $log.append(`<div>${msg}</div>`);
-                $log.scrollTop($log[0].scrollHeight); // rola sempre pro final
-            }
-            
-            // Recebe histórico completo da sala
-            socket.on('history', data => {
-                $history.empty();
-                data.forEach(r => $history.append(`<b>${r.vencedor} </b>`));
-                log("📜 Histórico carregado (" + data.length + " itens)");
-            });
-            
-            // Recebe novos resultados
-            socket.on('newResult', data => {
-                const valor = data.vencedor; // Array.isArray(data.data) ? data.data.join(' ') : data.data;
-                $history.append(`<b>${valor} </b>`);
-                if ($history.children().length > 20) {
-                    $history.children().first().remove();
-                }
-                AddDeck(data);
-                setTimeout(() => { $round.html(""); }, 4000);
-                log("🎲 Novo resultado: " + valor);
-            });
-            
-            // Atualiza status da sala
-            socket.on('status', data => {
-                $status.text(data);
-                log("ℹ️ Status: " + data);
-            });
-            socket.on('round', data => {
-                AddDeck(data);
-                
-                
-                console.log("Round:", data);
-            });
-            
-            
-            socket.on('tempo', data => {
-                $tempo.text(data);
-                // log("ℹ️ Status: " + data);
-            });
-            
-            // Exibe erros
-            socket.on('error', data => {
-                $error.text(data.error || 'Erro desconhecido');
-                log("❌ Erro: " + (data.error || 'Erro desconhecido'));
-            });
-            
-            // Eventos de conexão
-            socket.on("connect", () => {
-                $status.text("Conectado");
-                socket.emit("joinRoom", $roomName);
-                log("✅ Conectado ao servidor (ID: " + socket.id + ")");
-            });
-            
-            socket.on("connect_error", (err) => {
-                $status.text("Erro");
-                $error.text("Erro ao conectar: " + err.message);
-                log("❌ Erro de conexão: " + err.message);
-            });
-            
-            socket.on("reconnect_attempt", (attempt) => {
-                $status.text("Reconectando...");
-                log("🔄 Tentando reconectar... tentativa #" + attempt);
-            });
-            
-            socket.on("disconnect", (reason) => {
-                $status.text("Desconectado");
-                log("⚠️ Desconectado: " + reason);
-            });
-        });
+        
     </script>
+    
+    
+    
+    
+    
+    <script src="js/baccarat.js"></script>
+    
+    
+    
 </body>
 
 </html>

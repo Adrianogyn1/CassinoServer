@@ -51,9 +51,10 @@ app.get('/api/rooms', (req, res) => {
 });
 
 //socket service
-io.on("connection", (socket) => 
+io.on("connection", (socket) =>
 {
     console.log("Novo usuário conectado:", socket.id);
+    
     
     
     // cliente informa para qual sala quer entrar
@@ -64,8 +65,13 @@ io.on("connection", (socket) =>
             return;
         }
         
-        sala.AddUser(socket);
         
+        sala.AddUser(socket);
+        //bet
+        socket.on("mybet", (data) =>
+        {
+            sala.PlaceBet(data, socket);
+        });
         // quando sair
         socket.on("disconnect", () => {
             sala.RemoveUser(socket);

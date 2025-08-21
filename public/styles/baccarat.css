@@ -1,0 +1,45 @@
+body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+        }
+        
+        #status {
+            font-weight: bold;
+        }
+        
+        #error {
+            color:   red;
+            margin-top: 10px;
+        }
+        
+        #log {
+            margin-top: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 14px;
+            background: #f9f9f9;
+            color: black;
+            
+        }
+        
+        .carta {
+            width: 5rem;
+            height: 7rem;
+            box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.3);
+            /* normal, vertical */
+            transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .carta.rot90 {
+            transform: rotate(90deg);
+            width: 7rem;
+            height: 5rem;
+            box-shadow: 4px 2px 6px rgba(0, 0, 0, 0.3);
+            /* ajustado para horizontal */
+        }
