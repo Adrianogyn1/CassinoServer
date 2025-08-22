@@ -1,8 +1,8 @@
 const SalaBase = require('./SalaBase');
 
 class SalaBacboo extends SalaBase {
-    constructor(nome) {
-        super('bacboo', nome, 20);
+    constructor(nome,image="") {
+        super('bacboo', nome, 20,image);
 
         this.banker = { dados: [], complete: false };
         this.player = { dados: [], complete: false };

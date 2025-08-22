@@ -2,9 +2,9 @@ const SalaBase = require('./SalaBase');
 
 class SalaRoleta extends SalaBase
 {
-    constructor(nome)
+    constructor(nome,image="")
     {
-        super("roleta",nome,20);
+        super("roleta",nome,20,image);
     }
     
   async  GerarResultado()
