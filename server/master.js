@@ -11,7 +11,6 @@ const SalaBacboo = require('./SalaBacboo');
 const app = express();
 app.use(express.json());
 app.use(cors()); // habilita CORS para todas as origens
-app.use(express.static(path.join(__dirname, 'public')));
 
 //io
 const server = http.createServer(app);
@@ -51,7 +50,14 @@ app.get('/api/rooms', (req, res) => {
 });
 
 app.get('/teste', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/images/img1.png'));
+    res.sendFile(path.join(__dirname, '../public/images/bj_1.jpeg'));
+});
+
+app.use(express.static(path.join(__dirname, '../public')));
+
+// Garante que '/' abra o index.html
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
 
