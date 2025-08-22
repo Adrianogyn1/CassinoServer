@@ -26,17 +26,17 @@ const io = new Server(server, {
 
 // criar salas
 const salas = [
-    new SalaRoleta('Immersiver'),
-    new SalaRoleta('Auto Roolete'),
-    new SalaRoleta('Stake'),
-    new SalaRoleta('Brasileira'),
+    new SalaRoleta('Immersiver',"/images/imm.jpg"),
+    new SalaRoleta('Auto Roolete',"/images/autoRollete.jpeg"),
+    new SalaRoleta('Stake',"/images/autoRollete.jpeg"),
+    new SalaRoleta('Brasileira',"/images/autoRollete.jpeg"),
     
-    new SalaBaccarat('Baccarat 1'),
-    new SalaBaccarat('Baccarat 2'),
-    new SalaBaccarat('Baccarat 3'),
-    new SalaBaccarat('Stake Bacarat'),
-    new SalaBacboo('Bacboo Live'),
-    new SalaBacboo('Bacboo ao vivo')
+    new SalaBaccarat('Baccarat 1',"/images/bacarat_0.jpeg"),
+    new SalaBaccarat('Baccarat 2',"/images/bacarat_0.jpeg"),
+    new SalaBaccarat('Baccarat 3',"/images/bacarat_0.jpeg"),
+    new SalaBaccarat('Stake Bacarat',"/images/bacarat_0.jpeg"),
+    new SalaBacboo('Bacboo Live',"/images/bacboo_b.webp"),
+    new SalaBacboo('Bacboo ao vivo',"/images/bacboo_i.webp")
 ];
 
 // iniciar cada sala

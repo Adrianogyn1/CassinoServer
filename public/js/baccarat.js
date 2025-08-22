@@ -1,6 +1,10 @@
 $(function() {
+
+    // ================= VARIÁVEIS =================
     let chipSelected = null;
-    const bet = { banker: 0, player: 0, draw: 0, total: 0 };
+    const bet = { player: 0, banker: 0, draw: 0, total: 0 };
+    let apostaHistorico = [];
+    let ultimaAposta = null;
 
     const $el = {
         betBoxes: $("#bet_player, #bet_banker, #bet_draw"),
@@ -13,52 +17,53 @@ $(function() {
         status: $('#status'),
         error: $('#error')
     };
-    
 
     const params = new URLSearchParams(window.location.search);
     const $roomName = params.get('room');
     const socket = io("https://cassinoserver-production.up.railway.app");
     const myHistorico = [];
 
-    // ================= BET FUNCTIONS =================
-    function LimparAposta() {
-$el.betBoxes.each(function() {
-    $(this).find(".chip").remove();
-});
+    // ================= FUNÇÕES =================
+    function salvarHistorico() {
+        const estado = {};
+        $el.betBoxes.each(function() {
+            const id = $(this).attr("id");
+            const total = $(this).find(".chip").toArray()
+                .reduce((sum, c) => sum + parseFloat($(c).data("value")) || 0, 0);
+            estado[id] = total;
+        });
+        apostaHistorico.push(estado);
     }
-    
-    function DobrarAposta(param) {
 
-    }
-    
-    function VoltarAposta(){
-
-    }
-    
     function updateBet() {
         $el.betBoxes.each(function() {
             const id = $(this).attr("id");
             const total = $(this).find(".chip").toArray()
-                .reduce((sum, c) => sum + parseInt($(c).data("value")) || 0, 0);
-
+                .reduce((sum, c) => sum + parseFloat($(c).data("value")) || 0, 0);
             if (id.includes("player")) bet.player = total;
             if (id.includes("banker")) bet.banker = total;
             if (id.includes("draw")) bet.draw = total;
         });
         bet.total = bet.player + bet.banker + bet.draw;
-       socket.emit("mybet",bet);
-        console.log();
+
+        // salva histórico somente se houver mudança
+        const ultimo = apostaHistorico[apostaHistorico.length - 1] || {};
+        if (!ultimo || bet.player !== (ultimo["bet_player"]||0) ||
+            bet.banker !== (ultimo["bet_banker"]||0) ||
+            bet.draw !== (ultimo["bet_draw"]||0)) {
+            salvarHistorico();
+            socket.emit("mybet", bet);
+        }
     }
 
     function addChip(value, container) {
-        // remove primeira ficha existente e soma valor
         const $first = container.find(".chip").first();
         if ($first.length) {
             value += parseFloat($first.data("value"));
             $first.remove();
         }
 
-        const $chip = $(`<div class="chip" style="--chip-bg:blue" data-value="${value}">${value}</div>`)
+        const $chip = $(`<div class="chip" data-value="${value}">${value}</div>`)
             .draggable({
                 helper: "original",
                 cursor: "move",
@@ -71,12 +76,61 @@ $el.betBoxes.each(function() {
         updateBet();
     }
 
-    $(".chip").click(function() {
-        chipSelected = parseFloat($(this).data("value"));
-        console.log("Valor selecionado:", chipSelected);
-    });
+    function LimparAposta() {
+        $el.betBoxes.each(function() { $(this).find(".chip").remove(); });
+        updateBet();
+    }
+
+    function DobrarAposta() {
+        $el.betBoxes.each(function() {
+            const $chip = $(this).find(".chip");
+            if ($chip.length) {
+                const value = parseFloat($chip.data("value")) * 2;
+                $chip.data("value", value).text(value);
+            }
+        });
+        updateBet();
+    }
+
+    function VoltarAposta() {
+        if (apostaHistorico.length < 2) return;
+        apostaHistorico.pop();
+        const ultimo = apostaHistorico[apostaHistorico.length - 1];
+        $el.betBoxes.each(function() {
+            const id = $(this).attr("id");
+            const $box = $(this).find(".bet-amount");
+            $box.empty();
+            if (ultimo[id] > 0) $("<div>").addClass("chip").attr("data-value", ultimo[id]).text(ultimo[id]).appendTo($box);
+        });
+        updateBet();
+    }
+
+    function Reapostar() {
+        if (!ultimaAposta) return;
+        $el.betBoxes.each(function() {
+            const id = $(this).attr("id");
+            const $box = $(this).find(".bet-amount");
+            $box.empty();
+            if (ultimaAposta[id] > 0) addChip(ultimaAposta[id], $box);
+        });
+    }
+
+    function RoundEnd() {
+        if (bet.total <= 0) return;
+        ultimaAposta = {};
+        $el.betBoxes.each(function() {
+            const id = $(this).attr("id");
+            const $chip = $(this).find(".chip");
+            if ($chip.length) ultimaAposta[id] = parseFloat($chip.data("value"));
+        });
+        LimparAposta();
+    }
+
+    // ================= CHIP EVENTS =================
+    $(".chip").click(function() { chipSelected = parseFloat($(this).data("value")); });
 
     $el.betBoxes.click(function() {
+        if (!chipSelected) return;
         const $amount = $(this).find(".bet-amount");
         addChip(chipSelected, $amount);
     });
@@ -92,39 +146,33 @@ $el.betBoxes.each(function() {
         }
     });
 
-    // ================= CARD FUNCTIONS =================
+    // ================= BOTÕES =================
+    $("#btnRepostar").click(Reapostar);
+    $("#btnVoltar").click(VoltarAposta);
+    $("#btnDobrar").click(DobrarAposta);
+    $("#btnLimpar").click(LimparAposta);
+
+    // ================= CARD & HISTORY =================
     function renderCarta(c) {
         const cor = (c.nipe==="♥"||c.nipe==="♦") ? "text-danger":"text-dark";
-        return `
-            <div class="carta col-auto mb-2">
-                <div class="card border-dark bg-white text-center d-flex flex-column justify-content-between" style="width:5rem;height:7rem">
-                    <div class="d-flex justify-content-start p-1"><span class="${cor} fw-bold">${c.val}${c.nipe}</span></div>
-                    <div class="d-flex align-items-center justify-content-center flex-grow-1"><span class="${cor} fs-2">${c.nipe}</span></div>
-                    <div class="d-flex justify-content-end p-1"><span class="${cor} fw-bold" style="transform:rotate(180deg)">${c.val}${c.nipe}</span></div>
-                </div>
-            </div>`;
+        return `<div class="carta col-auto mb-2">
+            <div class="card border-dark bg-white text-center d-flex flex-column justify-content-between" style="width:5rem;height:7rem">
+                <div class="d-flex justify-content-start p-1"><span class="${cor} fw-bold">${c.val}${c.nipe}</span></div>
+                <div class="d-flex align-items-center justify-content-center flex-grow-1"><span class="${cor} fs-2">${c.nipe}</span></div>
+                <div class="d-flex justify-content-end p-1"><span class="${cor} fw-bold" style="transform:rotate(180deg)">${c.val}${c.nipe}</span></div>
+            </div>
+        </div>`;
     }
 
-    function addDeck(data){
+    function addDeck(data) {
         $el.playerDeck.html(data.player.map(renderCarta).join(''));
         $el.bankerDeck.html(data.banker.map(renderCarta).join(''));
-        ["#player","#banker"].forEach(id => $(`${id} .carta`).eq(2).css("box-shadow","none").addClass("rot90"));
     }
 
     function atualizarHistoricoBigRoad(array){
         $el.historico.empty();
         let lastType = null, $col;
         array.forEach(v => {
-            if(v==='d' && $col){
-                const $last = $col.children().last();
-                let count = parseInt($last.attr("data-draws")||0)+1;
-                $last.attr("data-draws",count).find(".draw-count").remove();
-                $("<div>").addClass("draw-count").text(count).css({
-                    position:"absolute", top:"-12px", left:"50%", transform:"translateX(-50%)",
-                    color:"green", "font-size":"10px", "font-weight":"bold"
-                }).appendTo($last);
-                return;
-            }
             if(v!==lastType){
                 $col = $("<div>").css({display:"flex","flex-direction":"column-reverse",gap:"5px","align-items":"center"});
                 $el.historico.append($col);
@@ -140,39 +188,39 @@ $el.betBoxes.each(function() {
         $el.historico.scrollLeft($el.historico[0].scrollWidth);
     }
 
+    function log(msg){ $el.log.append(`<div>${msg}</div>`); $el.log.scrollTop($el.log[0].scrollHeight); }
 
-
-    function log(msg){
-        $el.log.append(`<div>${msg}</div>`);
-        $el.log.scrollTop($el.log[0].scrollHeight);
-    }
-
-        // ================= SOCKET =================
+    // ================= SOCKET =================
     socket.on('connect', () => { 
         $el.status.text("Conectado"); 
         socket.emit("joinRoom",$roomName); 
-        log(`✅ Conectado (ID:${socket.id})`) 
+        log(`✅ Conectado (ID:${socket.id})`);
     });
     socket.on('disconnect', ()=> $el.status.text("Desconectado"));
     socket.on('connect_error', err => $el.status.text(`Erro: ${err.message}`));
     socket.on('reconnect_attempt', a => $el.status.text(`Reconectando... #${a}`));
+
     socket.on('history', data => {
         myHistorico.push(...data);
         atualizarHistoricoBigRoad(myHistorico.map(c=>c.vencedor));
         $el.history.html(data.map(r=>`<b>${r.vencedor}</b>`).join(''));
         log(`📜 Histórico carregado (${data.length})`);
     });
+
     socket.on('newResult', data => {
         addDeck(data);
         myHistorico.push(data);
         atualizarHistoricoBigRoad(myHistorico.map(c=>c.vencedor));
         setTimeout(()=>{$el.playerDeck.empty(); $el.bankerDeck.empty();},4000);
+        RoundEnd(); // salva ultima aposta e limpa fichas
         log(`🎲 Novo resultado ${data.vencedor}`);
     });
-    socket.on('registerBet', data=>{log("bet aceita");});
-    socket.on('payout', data=>{log("ganou: "+data);LimparAposta();});
+
+    socket.on('registerBet', data => { log("bet aceita"); });
+    socket.on('payout', data => { log("ganhou: "+data); });
     socket.on('round', addDeck);
     socket.on('tempo', data => $el.tempo.text(data));
     socket.on('status', data => $el.status.text(data));
     socket.on('error', data => $el.error.text(data.error||data));
+
 });

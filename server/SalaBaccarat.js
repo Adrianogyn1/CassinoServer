@@ -105,7 +105,7 @@ class SalaBaccarat extends SalaBase {
             
             if (result.vencedor === "b") {
                 // Banker venceu (com comissão de 5%)
-                valor = c.bet.banker + (c.bet.banker * 0.95);
+                valor = c.bet.banker*2;// + (c.bet.banker * 0.95);
             }
             else if (result.vencedor === "p") {
                 // Player venceu
