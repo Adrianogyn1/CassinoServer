@@ -56,6 +56,7 @@ class SalaBacboo extends SalaBase {
             nome: this.nome,
             users: this.userCount,
             status: this.status,
+            image: this.image,
             history: this.history.map(n => n.vencedor).reverse().slice(0, 10)
         };
     }
