@@ -10,8 +10,7 @@ const SalaBacboo = require('./SalaBacboo');
 const app = express();
 app.use(express.json());
 app.use(cors()); // habilita CORS para todas as origens
-app.use(express.static('public')); // serve Index.html e games/
-
+app.use(express.static(path.join(__dirname, 'public')));
 
 //io
 const server = http.createServer(app);
