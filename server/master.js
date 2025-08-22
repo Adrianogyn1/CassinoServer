@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -48,6 +49,11 @@ app.get('/api/rooms', (req, res) => {
     ));
     res.json(result);
 });
+
+app.get('/teste', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/images/img1.png'));
+});
+
 
 //socket service
 io.on("connection", (socket) =>
