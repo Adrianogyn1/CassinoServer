@@ -31,9 +31,11 @@ const salas = [
     new SalaRoleta('Brasileira',"/images/autoRollete.jpeg"),
     
     new SalaBaccarat('Baccarat 1',"/images/bacarat_0.jpeg"),
-    new SalaBaccarat('Baccarat 2',"/images/bacarat_0.jpeg"),
-    new SalaBaccarat('Baccarat 3',"/images/bacarat_0.jpeg"),
+    new SalaBaccarat('Baccarat 2',"/images/bacarat_1.jpeg"),
+    new SalaBaccarat('Baccarat 3',"/images/bacarat_2.jpeg"),
     new SalaBaccarat('Stake Bacarat',"/images/bacarat_0.jpeg"),
+  
+    new SalaBacboo('teste',"/images/bacboo_b.webp"),
     new SalaBacboo('Bacboo Live',"/images/bacboo_b.webp"),
     new SalaBacboo('Bacboo ao vivo',"/images/bacboo_i.webp")
 ];
@@ -49,8 +51,10 @@ app.get('/api/rooms', (req, res) => {
     res.json(result);
 });
 
-app.get('/teste', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/images/bj_1.jpeg'));
+app.get('/api/teste', (req, res) => 
+{
+    res.json({"salas":salas.length});
+    //res.sendFile(path.join(__dirname, '../public/images/bj_1.jpeg'));
 });
 
 app.use(express.static(path.join(__dirname, '../public')));

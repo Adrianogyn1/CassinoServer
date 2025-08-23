@@ -130,7 +130,7 @@ $(function() {
     $(".chip").click(function() { chipSelected = parseFloat($(this).data("value")); });
 
     $el.betBoxes.click(function() {
-        if (!chipSelected) return;
+        if (!chipSelected && chipSelected <=0) return;
         const $amount = $(this).find(".bet-amount");
         addChip(chipSelected, $amount);
     });

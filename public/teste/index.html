@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Roleta</title>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h1 { text-align: center; }
+    #status { font-weight: bold; }
+    #error { color: red; margin-top: 10px; }
+    #log { margin-top: 15px; padding: 10px; border: 1px solid #ccc; max-height: 200px; overflow-y: auto; font-size: 14px; background: #f9f9f9; }
+    ul { list-style: none; padding: 0; }
+    li { padding: 5px 0; }
+</style>
+</head>
+<body>
+<h1>Roleta</h1>
+<div id="tempo"></div>
+<div>Status: <span id="status">Aguardando</span></div>
+<div id="error"></div>
+<div id="log"></div>
+<div id="history"></div>
+
+<script>
+$(function() {
+    const params = new URLSearchParams(window.location.search);
+    const $roomName = "teste";// params.get('room');
+    const url = "http://localhost:7700";
+    const socket = io(url);
+
+    const $history = $('#history');
+    const $status = $('#status');
+    const $error = $('#error');
+    const $log = $('#log');
+    const $tempo = $('#tempo');
+
+    function log(msg) {
+        $log.append(`<div>${msg}</div>`);
+        $log.scrollTop($log[0].scrollHeight); // rola sempre pro final
+    }
+    
+    function Teste(){
+    $.post("http://localhost:7700/baccarat.js",function(data){
+        
+     });
+      console.log("ok");
+    }
+    Teste();
+
+    // Recebe histórico completo da sala
+    socket.on('history', data => {
+        $history.empty();
+        data.forEach(r => $history.append(`<b>${r.numero} </b>`));
+        log("📜 Histórico carregado (" + data.length + " itens)");
+    });
+
+    // Recebe novos resultados
+    socket.on('newResult', data => {
+        const valor = data.numero;// Array.isArray(data.data) ? data.data.join(' ') : data.data;
+        $history.append(`<b>${valor} </b>`);
+        if ($history.children().length > 20) {
+            $history.children().first().remove();
+        }
+        log("🎲 Novo resultado: " + valor);
+    });
+
+    // Atualiza status da sala
+    socket.on('status', data => {
+        $status.text(data);
+        log("ℹ️ Status: " +   data);
+    });
+    
+    socket.on('tempo', data => {
+    $tempo.text(data);
+   // log("ℹ️ Status: " + data);
+});
+
+    // Exibe erros
+    socket.on('error', data => {
+        $error.text(data.error || 'Erro desconhecido');
+        log("❌ Erro: " + (data.error || 'Erro desconhecido'));
+    });
+
+    // Eventos de conexão
+    socket.on("connect", () => {
+        $status.text("Conectado");
+        socket.emit("joinRoom", $roomName);
+        log("✅ Conectado ao servidor (ID: " + socket.id + ")");
+    });
+
+    socket.on("connect_error", (err) => {
+        $status.text("Erro");
+        $error.text("Erro ao conectar: " + err.message);
+        log("❌ Erro de conexão: " + err.message);
+    });
+
+    socket.on("reconnect_attempt", (attempt) => {
+        $status.text("Reconectando...");
+        log("🔄 Tentando reconectar... tentativa #" + attempt);
+    });
+
+    socket.on("disconnect", (reason) => {
+        $status.text("Desconectado");
+        log("⚠️ Desconectado: " + reason);
+    });
+});
+</script>
+</body>
+</html>
