@@ -14,6 +14,7 @@ class NumInfo {
 
   constructor(numero) {
     this.numero = numero;
+
     if (numero === 0) {
       this.color = "green";
       this.region = "Vizinhos";
@@ -23,19 +24,20 @@ class NumInfo {
       this.dezena = numero < 13 ? 1 : numero < 25 ? 2 : 3;
       this.coluna = numero % 3 === 1 ? 1 : numero % 3 === 2 ? 2 : 3;
       this.imparPar = numero % 2 === 0 ? "Par" : "Impar";
-      this.region = NumInfo.Region(numero);
+      this.region = this.Region(numero);
     }
-    this.terminal = NumInfo.getTerminal(numero);
+
+    this.terminal = this.getTerminal(numero);
     this.index = NumInfo.numeros.indexOf(numero);
   }
 
-  static getTerminal(n) {
+  getTerminal(n) {
     let s = n.toString();
     if (s.length > 1) s = s.substring(0, s.length - 1);
     return parseInt(s) || 0;
   }
 
-  static Region(numero) {
+  Region(numero) {
     if (NumInfo.voisins.includes(numero)) return "Voisins";
     else if (NumInfo.tiers.includes(numero)) return "Tier";
     else if (NumInfo.orphelins.includes(numero)) return "Orphelins";
@@ -46,13 +48,15 @@ class NumInfo {
     return this.color;
   }
 }
+
 module.exports = NumInfo;
 
 /*
-// exemplo de uso
+// --- exemplo de uso ---
 function spin() {
   let numero = Math.floor(Math.random() * 37);
   let n = new NumInfo(numero);
+
   console.log("🎲 Número:", n.numero);
   console.log("🎨 Cor:", n.color);
   console.log("📍 Região:", n.region);
@@ -63,7 +67,7 @@ function spin() {
   console.log("---------------------------");
 }
 
-// exemplo: rodar 5 giros
+// rodar 5 giros
 for (let i = 0; i < 5; i++) {
   spin();
 }
