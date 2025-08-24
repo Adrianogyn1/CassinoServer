@@ -12,10 +12,12 @@ class SalaBase
         this.image = image;
         
         this.tempoAposta = tempoAposta;
-        this.tempoAtual = Math.round(Math.random()*tempoAposta); // começa cheio
+        this.tempoAtual = Math.round(Math.random() * tempoAposta); // começa cheio
     }
     
-    forEachUser(callback) {
+    forEachUser(callback, _users = null)
+    {
+        
         for (const user of this.users) {
             if (user.connected) callback(user);
         }
@@ -66,7 +68,9 @@ class SalaBase
     }
     
     PayoutBets(result) {}
-    SendPayout(user, msg) {
+    SendPayout(user, msg) 
+    {
+        if(user && user.connected)
         user.emit("payout", msg);
     }
     

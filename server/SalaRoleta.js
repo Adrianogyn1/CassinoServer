@@ -52,9 +52,29 @@ class SalaRoleta extends SalaBase {
         await this.Esperar(10000);
 
         this.AddResultado(resultado);
+        PayoutBets(resultado);
 
         // Simula o tempo de roleta girando
         await this.Esperar(1000);
+    }
+    
+
+    PayoutBets(result) {
+        this.bets.forEach(c => {
+            let valor = 0;
+            
+            c.bets.numeros.forEach(n=>{
+                if(n==result.numero)
+                valor *= n.valor;
+            });
+            
+            if (valor > 0) {
+                this.SendPayout(c.user,  valor );
+            }
+        });
+        
+        // limpa apostas para próxima rodada
+        this.bets = [];
     }
 
     GetInfo() {
