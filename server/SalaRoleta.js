@@ -52,6 +52,7 @@ class SalaRoleta extends SalaBase {
         await this.Esperar(10000);
 
         this.AddResultado(resultado);
+        //faz o pagamento 
         this.PayoutBets(resultado);
 
         // Simula o tempo de roleta girando
@@ -63,7 +64,7 @@ class SalaRoleta extends SalaBase {
         this.bets.forEach(c => {
             let valor = 0;
             
-            c.bets.numeros.forEach(n=>{
+            c.bet.numeros.forEach(n=>{
                 if(n==result.numero)
                 valor *= n.valor;
             });
