@@ -5,6 +5,8 @@
 <title>Roleta</title>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="./js/roletaPlguin.js"></script>
+  
 <style>
     body { font-family: Arial, sans-serif; margin: 20px; }
     h1 { text-align: center; }
@@ -19,12 +21,41 @@
 <h1>Roleta</h1>
 <div id="tempo"></div>
 <div>Status: <span id="status">Aguardando</span></div>
+
+  <div class="">
+    <canvas id="roulette" width="300" height="300" style="display: none;"></canvas>
+  </div>
+  
 <div id="error"></div>
 <div id="log"></div>
 <div id="history"></div>
 
 <script>
 $(function() {
+    
+      $("#roulette").roulette({
+      duration: 10000,
+      wheelRotations: 6,
+      ballRotations: 12,
+      onFinish: function(num){
+       // $('.table-container').css('display','block');
+        $('#roulette').hide();//.css('display','none');
+       // $("#roulette").width(100);
+//$("#roulette").height(100);
+        //alert("Parou no número " + num);
+      }
+    });
+  /*  setInterval(function(){
+        $('.table-container').css('display','none');
+        $('#roulette').css('display','block');
+        
+      const val = Math.round(Math.random()*37);
+      console.log(val+'');
+      $("#roulette").data("roulette").spin(val);
+    },10000);*/
+    
+    
+    
     const params = new URLSearchParams(window.location.search);
     const $roomName = params.get('room');
     const url = "https://cassinoserver-production.up.railway.app";
@@ -55,7 +86,18 @@ $(function() {
         if ($history.children().length > 20) {
             $history.children().first().remove();
         }
+        
+     //   $("#roulette").data("roulette").spin(valor);
+       // $("#roulette").show();
+        
         log("🎲 Novo resultado: " + valor);
+    });
+    
+    socket.on('round', data => 
+    {
+        const valor = data.numero;// Array.isArray(data.data) ? data.data.join(' ') : data.data;
+        $("#roulette").data("roulette").spin(valor);
+        $("#roulette").show();
     });
 
     // Atualiza status da sala

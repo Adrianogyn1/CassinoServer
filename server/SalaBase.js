@@ -12,7 +12,7 @@ class SalaBase
         this.image = image;
         
         this.tempoAposta = tempoAposta;
-        this.tempoAtual = tempoAposta; // começa cheio
+        this.tempoAtual = Math.round(Math.random()*tempoAposta); // começa cheio
     }
     
     forEachUser(callback) {

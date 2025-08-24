@@ -43,6 +43,14 @@ const salas = [
 // iniciar cada sala
 salas.forEach(s => s.Start());
 
+
+app.use(express.static(path.join(__dirname, '../public')));
+
+// Garante que '/' abra o index.html
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../public/index.html'));
+});
+
 // API para listar salas
 app.get('/api/rooms', (req, res) => {
     const result = salas.map(s => (
@@ -57,12 +65,7 @@ app.get('/api/teste', (req, res) =>
     //res.sendFile(path.join(__dirname, '../public/images/bj_1.jpeg'));
 });
 
-app.use(express.static(path.join(__dirname, '../public')));
 
-// Garante que '/' abra o index.html
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/index.html'));
-});
 
 
 //socket service
@@ -97,5 +100,5 @@ io.on("connection", (socket) =>
 
 
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 7070;
 server.listen(PORT, () => console.log(`Servidor master rodando na porta ${PORT}`));

@@ -1,140 +1,628 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>European Roulette Vertical</title>
-<style>
-body {
-  background-color: #006600;
-  font-family: Arial, sans-serif;
-  user-select: none;
-}
+  <meta charset="UTF-8">
+  <title>Roleta</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/roletaPlguin.js"></script>
+  
+  
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #176B44;
+    }
+    
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #fff;
+    }
+    
+    .table-container {
+      display: flex;
+      justify-content: center;
+     // perspective: 100;
+    //  transform-style: preserve-3d; /* necessário para 3D interno */
+    //transition: transform 0.5s ease;
+    //transform: rotateX('90deg'), rotateY('90deg');
+    
+    }
+    
+    .aposta-externa-container {
+      width: 90px;
+      height: 520px;
+    }
+    
+    .aposta-externa {
+      float: left;
+    }
+    
+    /* ---------------- APOSTAS ---------------- */
+    .aposta-externa div,
+    .table-nums .col {
+      border: 1px solid #fff;
+      text-align: center;
+      font-weight: bold;
+      color: white;
+    }
+    
+    .aposta-externa .dezena,
+    .aposta-externa .opcional {
+      background: #198754;
+      border: 1px solid #fff;
+      //  border-radius: .25rem;
+      // display: flex;
+      justify-content: center;
+      align-items: center;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+    }
+    
+    .aposta-externa .dezena {
+      width: 40px;
+      height: 160px;
+    }
+    
+    .aposta-externa .opcional {
+      width: 40px;
+      height: 80px;
+      
+    }
+    
+    .aposta-externa .opcional-null {
+      width: 40px;
+      height: 40px;
+      background: transparent;
+      border: 0px;
+    }
+    
+    /* ---------------- NÚMEROS ---------------- */
+    .table-nums {
+      width: 120px;
+      !important height: 520px;
+      !important margin: 3px;
+      z-index=499;!important
+      float: :right;
+    }
+    
+    .table-nums .row div {
+      width: 40px;
+      height: 40px;
+      line-height: 40px;
+    }
+    
+    .table-nums .row .zero {
+      width: 120px;
+      height: 40px;
+      line-height: 40px;
+      background: green !important;
+    }
+    
+    .table-nums .col {
+      //background: #6c757d;
+    }
+    
+    .vermelho {
+      background: red !important;
+    }
+    
+    .preto {
+      background: black !important;
+    }
+    
+    /* ---------------- COLUNAS ---------------- */
+    .aposta-externa-col {
+      //  display: flex;
+      //   justify-content: space-between;
+      // margin-top: 5px;
+    }
+    
+    .aposta-externa-col .col {
+      
+      background: #198754;
+      color: #fff;
+      font-weight: bold;
+      
+      text-align: center;
+      width: 40px;
+      !important height: 40px;
+      !important line-height: 40px;
+      
+    }
+    
+    .chip1 {
+      background: #565656;
+    }
+    
+    .chip2 {
+      background: #00EEBB;
+    }
+    
+    .chip {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 6px dashed #fff;
+      background: var(--chip-bg, #e11d48);
+      /* fundo base (rosa/vermelho por padrão) */
+      color: #fff;
+      font-weight: 700;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      cursor: pointer;
+      user-select: none;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, .25);
+      overflow: hidden;
+    }
+    
+    /* gomos decorativos */
+    .chip::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: repeating-conic-gradient(from 0deg,
+          rgba(255, 255, 255, 0.25) 0deg 15deg,
+          /* gomo claro */
+          transparent 15deg 30deg
+          /* espaço vazio */
+        );
+      mix-blend-mode: overlay;
+      /* mescla com a cor da ficha */
+    }
+    
+    /* anel interno */
+    .chip::after {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, .4);
+    }
+  </style>
+  
 
-.container {
-  width: 900px;
-  margin: 20px auto;
-  text-align: center;
-}
-
-.header {
-  color: white;
-  font-size: 36px;
-  margin-bottom: 20px;
-  text-shadow: 1px 0 0 black;
-}
-
-table {
-  border-collapse: collapse;
-  margin: 0 auto;
-}
-
-td {
-  width: 50px;
-  height: 50px;
-  border: 1px solid white;
-  text-align: center;
-  vertical-align: middle;
-  font-weight: bold;
-  color: white;
-}
-
-td.red {
-  background: linear-gradient(to bottom, #c61313 0%, #840000 100%);
-}
-
-td.black {
-  background: linear-gradient(to bottom, #424242 0%, #000000 100%);
-}
-
-td.green {
-  background: #0f8;
-  color: black;
-}
-
-td.span-cell {
-  font-size: 14px;
-}
-
-.betting-row td {
-  height: 40px;
-  font-size: 14px;
-}
-</style>
 </head>
+
 <body>
-<div class="container">
-  <div class="header">European Roulette</div>
-  <table>
+  <h1>Roleta</h1>
+  
+   <div class="">
+    <button class="btn btn-danger btnLimpar">x</button>
+        <button class="btn btn-info btnDobrar">2x</button>
+        <label for="tableSize">Tamanho da mesa:</label>
+<input type="range" id="tableSize" class="slide1" min="50" max="100" value="400">
+  </div>
+  
+  <div class="">
+    <canvas id="roulette" width="300" height="300" style="display: none;"></canvas>
+  </div>
+  
+  
+  
+  <div class="table-container">
+  
+      
+
+    <!-- Apostas externas -->
+    <div class="aposta-externa-container">
+      <div class="aposta-externa col">
+        <div class="opcional-null"></div>
+        <div class="opcional betClick" data-bet="" data-nums="1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18">1 - 18</div>
+        <div class="opcional betClick" data-bet="" data-nums="1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31,33,35">Ímpar</div>
+        <div class="preto opcional betClick" data-bet="" data-nums="2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35">Preto</div>
+        <div class="vermelho opcional betClick" data-bet="" data-nums="1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36">Vermelho</div>
+        <div class="opcional betClick" data-bet="" data-nums="2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36">Par</div>
+        <div class="opcional betClick" data-bet="" data-nums="19,20,21,22,23,24,25,26,27,28,29,30,21,32,33,34,35,36">19 - 36</div>
+      </div>
+      
+      <!-- Dúzias -->
+      <div class="aposta-externa">
+        <div class="opcional-null"></div>
+        <div class="dezena betClick" data-bet="" data-nums="1,2,3,4,5,6,7,8,9,10,11,12">1ª Dúzia</div>
+        <div class="dezena betClick" data-bet="" data-nums="13,14,15,16,17,18,19,20,21,22,23,24">2ª Dúzia</div>
+        <div class="dezena betClick" data-bet="" data-nums="25,26,27,28,29,30,31,32,33,34,35,36">3ª Dúzia</div>
+      </div>
+    </div>
+    
     <!-- Números -->
-    <tr>
-      <td class="green" rowspan="3">0</td>
-      <td class="red">3</td>
-      <td class="black">6</td>
-      <td class="red">9</td>
-      <td class="red">12</td>
-      <td class="black">15</td>
-      <td class="red">18</td>
-      <td class="red">21</td>
-      <td class="black">24</td>
-      <td class="red">27</td>
-      <td class="red">30</td>
-      <td class="black">33</td>
-      <td class="red">36</td>
-      <td class="span-cell">2-1</td>
-    </tr>
-    <tr>
-      <td class="black">2</td>
-      <td class="red">5</td>
-      <td class="black">8</td>
-      <td class="black">11</td>
-      <td class="red">14</td>
-      <td class="black">17</td>
-      <td class="black">20</td>
-      <td class="red">23</td>
-      <td class="black">26</td>
-      <td class="black">29</td>
-      <td class="red">32</td>
-      <td class="black">35</td>
-      <td class="span-cell">2-1</td>
-    </tr>
-    <tr>
-      <td class="red">1</td>
-      <td class="black">4</td>
-      <td class="red">7</td>
-      <td class="black">10</td>
-      <td class="black">13</td>
-      <td class="red">16</td>
-      <td class="black">19</td>
-      <td class="black">22</td>
-      <td class="red">25</td>
-      <td class="red">28</td>
-      <td class="black">31</td>
-      <td class="red">34</td>
-      <td class="span-cell">2-1</td>
-    </tr>
+    <div class="table-nums">
+      <div class="row">
+        <div class="col zero betClick" data-bet="" data-numero="0">0</div>
+      </div>
+      <!-- 1 a 36 com data-bet -->
+      <div class="row">
+        <div class="col vermelho betClick" data-bet="" data-numero="1">1</div>
+        <div class="col preto betClick" data-bet="" data-numero="2">2</div>
+        <div class="col vermelho betClick" data-bet="" data-numero="3">3</div>
+      </div>
+      <div class="row">
+        <div class="col preto betClick" data-bet="" data-numero="4">4</div>
+        <div class="col vermelho betClick" data-bet="" data-numero="5">5</div>
+        <div class="col preto betClick" data-bet="" data-numero="6">6</div>
+      </div>
+      <div class="row">
+        <div class="col vermelho betClick" data-bet="" data-numero="7">7</div>
+        <div class="col preto betClick" data-bet="" data-numero="8">8</div>
+        <div class="col vermelho betClick" data-bet="" data-numero="9">9</div>
+      </div>
+      <div class="row">
+        <div class="col preto betClick" data-bet="" data-numero="10">10</div>
+        <div class="col preto betClick" data-bet="" data-numero="11">11</div>
+        <div class="col vermelho betClick" data-bet="" data-numero="12">12</div>
+      </div>
+      <div class="row">
+        <div class="col preto betClick" data-bet="" data-numero="13">13</div>
+        <div class="col vermelho betClick" data-bet="" data-numero="14">14</div>
+        <div class="col preto betClick" data-bet="" data-numero="15">15</div>
+      </div>
+      <div class="row">
+        <div class="col vermelho betClick" data-bet="" data-numero="16">16</div>
+        <div class="col preto betClick" data-bet="" data-numero="17">17</div>
+        <div class="col vermelho betClick" data-bet="" data-numero="18">18</div>
+      </div>
+      <div class="row">
+        <div class="col vermelho betClick" data-bet="" data-numero="19">19</div>
+        <div class="col preto betClick" data-bet="" data-numero="20">20</div>
+        <div class="col vermelho betClick" data-bet="" data-numero="21">21</div>
+      </div>
+      <div class="row">
+        <div class="col preto betClick" data-bet="" data-numero="22">22</div>
+        <div class="col vermelho betClick" data-bet="" data-numero="23">23</div>
+        <div class="col preto betClick" data-bet="" data-numero="24">24</div>
+      </div>
+      <div class="row">
+        <div class="col vermelho betClick" data-bet="" data-numero="25">25</div>
+        <div class="col preto betClick" data-bet="" data-numero="26">26</div>
+        <div class="col vermelho betClick" data-bet="" data-numero="27">27</div>
+      </div>
+      <div class="row">
+        <div class="col preto betClick" data-bet="" data-numero="28">28</div>
+        <div class="col vermelho betClick" data-bet="" data-numero="29">29</div>
+        <div class="col preto betClick" data-bet="" data-numero="30">30</div>
+      </div>
+      <div class="row">
+        <div class="col vermelho betClick" data-bet="" data-numero="31">31</div>
+        <div class="col preto betClick" data-bet="" data-numero="32">32</div>
+        <div class="col vermelho betClick" data-bet="" data-numero="33">33</div>
+      </div>
+      <div class="row">
+        <div class="col preto betClick" data-bet="" data-numero="34">34</div>
+        <div class="col vermelho betClick" data-bet="" data-numero="35">35</div>
+        <div class="col preto betClick" data-bet="" data-numero="36">36</div>
+      </div>
+      
+      <!-- Colunas -->
+      <div class="row aposta-externa-col">
+        <div class="col coluna betClick" data-nums="1,4,7,10,13,16,19,22,25,28,31,34" data-bet="">1</div>
+        <div class="col coluna betClick" data-nums="2,5,8,11,14,17,20,23,26,29,32,35" data-bet="">2</div>
+        <div class="col coluna betClick" data-nums="3,6,9,12,15,18,21,24,27,30,33,36" data-bet="">3</div>
+      </div>
+    </div>
+  </div>
+      
+  
+ 
+  
+<script>
+$(document).ready(function() {
+  
+  
+  $("#roulette").roulette({
+      duration: 5000,
+      wheelRotations: 6,
+      ballRotations: 12,
+      onFinish: function(num){
+        $('.table-container').css('display','block');
+        $('#roulette').css('display','none');
+       // $("#roulette").width(100);
+//$("#roulette").height(100);
+        //alert("Parou no número " + num);
+      }
+    });
+    setInterval(function(){
+        $('.table-container').css('display','none');
+        $('#roulette').css('display','block');
+        
+      const val = Math.round(Math.random()*37);
+      console.log(val+'');
+      $("#roulette").data("roulette").spin(val);
+    },10000);
+    
+  
+  // ===============================
+  // Variáveis globais
+  // ===============================
+  let myBet = [];
+  let tableBets = [];
 
-    <!-- 12s -->
-    <tr class="betting-row">
-      <td colspan="4">1st 12</td>
-      <td colspan="4">2nd 12</td>
-      <td colspan="4">3rd 12</td>
-      <td></td>
-    </tr>
+  // ===============================
+  // Função para atualizar apostas
+  // ===============================
+  function updateBet() {
+    let tempBets = [];
+    tableBets = [];
 
-    <!-- Apostas especiais -->
-    <tr class="betting-row">
-      <td colspan="2">1-18</td>
-      <td colspan="2">Even</td>
-      <td colspan="2" class="red">Red</td>
-      <td colspan="2" class="black">Black
-</td>
-      <td colspan="2">Odd</td>
-      <td colspan="2">19-36</td>
-      <td></td>
-    </tr>
-  </table>
-</div>
+    // Apostas individuais
+    $('.betClick').not('[data-nums]').each((_, el) => {
+      let $el = $(el);
+      let $chip = $el.find('.chip');
+
+      if ($chip.length > 0) {
+        let value = parseFloat($chip.text());
+        let numero = $el.data('numero');
+        tableBets.push({ numero, valor: value });
+        tempBets.push({ numero: parseInt(numero), valor: value });
+      }
+    });
+
+    // Apostas múltiplas (splits/quadras)
+    $('.betDiv, .betClick[data-nums]').each((_, el) => {
+      let $el = $(el);
+      let $chip = $el.find('.chip');
+
+      if ($chip.length > 0) {
+        let value = parseFloat($chip.text());
+        let nuns = $el.data('nums');
+        let numeros = nuns.split(',').map(n => parseInt(n));
+
+        tableBets.push({ numero: nuns, valor: value });
+
+        numeros.forEach(n => {
+          let existing = tempBets.find(b => b.numero === n);
+          let splitValue = value / numeros.length;
+          if (existing) existing.valor += splitValue;
+          else tempBets.push({ numero: n, valor: splitValue });
+        });
+      }
+    });
+
+    let total = tempBets.reduce((sum, b) => sum + b.valor, 0);
+    myBet = { numeros: tempBets, total };
+    console.log(myBet);
+  }
+
+  // ===============================
+  // Função para  chip
+  // ===============================
+  
+  function addDropEvt(div)
+  {
+   $div= $(div);
+   $div.css('z-index',499);
+   
+    $div.droppable({
+      accept: ".chip", // só aceita os chips
+      tolerance: "intersect",
+      drop: function(event, ui) {
+        ui.helper.data("dropped", true); // marca que o chip foi solto
+        const $target = $(this);
+        
+        // pega o valor do chip
+        let value = parseFloat(ui.helper.text());
+        var lasValue = parseFloat($target.find('.chip').text())| 0;
+        addChip($target, value +lasValue);
+        
+        // atualiza apostas
+        ui.helper.remove();
+        updateBet();}
+      });
+  }
+  
+  function clearChip(){
+    $('.betClick, .betDiv').each((idx,el)=>{
+      let $el = $(el);
+      let $chip = $el.find('.chip');
+      $chip.remove();
+    });
+    updateBet();
+  }
+  
+  function dobrarChip(){
+    $('.betClick, .betDiv').each((idx,el)=>{
+      let $el = $(el);
+      let $chip = $el.find('.chip');
+      $chip.text(parseFloat($chip.text())*2);
+    });
+    updateBet();
+  }
+  
+  function addChip($target, value) {
+    $target.find('.chip').remove();
+    let zindex = 5000;//$target.css('z-index') ||500;
+
+    const $chip = $('<div class="chip"></div>').text(value).css({
+      position: 'absolute',
+      width: '30px',
+      height: '30px',
+      'border-radius': '50%',
+     // background: 'orange',
+      color: 'black',
+      'text-align': 'center',
+      'line-height': '30px',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      'z-index': zindex,
+      cursor: 'move'
+    });
+    
+    
+    $chip.draggable({
+  helper: "clone",           // clone em vez do original (livre de contexto)
+  appendTo: "body",          // joga o helper direto no body
+  cursor: "move",
+  cursorAt: { top: 15, left: 15 },
+  revert: "invalid",
+  start: (e, ui) => {
+    ui.helper.css({
+      position: "fixed",      // usa fixed → ignora contextos relativos
+      top: e.clientY - 15,    // alinha com o mouse
+      left: e.clientX - 15,
+      "z-index": 999999,      // bem acima de tudo
+      pointerEvents: "none"   // não bloqueia os drops
+     // 'width':'60px',
+    //  'height':'60px'
+    });
+    $(e.target).css('display','none');
+  },
+  drag: (e, ui) => {
+    ui.helper.css({
+      top: e.clientY - 1,
+      left: e.clientX - 1
+    });
+  },
+  stop: (e, ui) => {
+          $(e.target).remove();
+    if (ui.helper.data("dropped")) return;
+    //if (!ui.helper.data("dropped")) {
+      ui.helper.remove();
+      updateBet();
+      
+
+     ui.helper.data("dropped",true);
+    }
+  
+});
+
+
+    if (!$target.hasClass('betDiv')) 
+    $target.css('position', 'relative');
+  
+  
+    $target.append($chip);
+    
+        $('.betClick, .betDiv').each((idx,el)=>{
+      let $el = $(el);
+          $el.css('z-index',zindex+1);
+        });
+  }
+  
+  //adicionar drop 
+  $('.betClick').each((idx,el)=>{addDropEvt(el);});
+
+
+
+  // ===============================
+  // Função para criar splits/quadras
+  // ===============================
+  function createSplitOrQuad($cells) {
+    const offsets = $cells.map($c => $c.offset());
+    const widths = $cells.map($c => $c.outerWidth());
+    const heights = $cells.map($c => $c.outerHeight());
+
+    const minLeft = Math.min(...offsets.map((o,i)=>o.left));
+    const minTop = Math.min(...offsets.map((o,i)=>o.top));
+    const maxRight = Math.max(...offsets.map((o,i)=>o.left + widths[i]));
+    const maxBottom = Math.max(...offsets.map((o,i)=>o.top + heights[i]));
+
+    const centerX = (minLeft + maxRight) / 2;
+    const centerY = (minTop + maxBottom) / 2;
+
+    const width = 40;
+    const height = 40;
+
+    const nums = $cells.map($c => $c.data('numero'));
+    const $div = $(`<div class="betDiv" data-nums="${nums}"></div>`).css({
+  position: 'absolute',
+  left: centerX - width / 4,
+  top: centerY - height / 4,
+  width: width / 2,
+  height: height / 2,
+  background: "transparent",
+  border: "1px dashed orange",
+  cursor: 'pointer',
+  'z-index': 20
+});
+
+//addDropEvt($div);
+
+    $('.table-container').append($div);
+  }
+
+
+  // ===============================
+  // Criação de splits e quadras
+  // ===============================
+  const splits = [
+    [1,2],[2,3],[4,5],[5,6],[7,8],[8,9],[10,11],[11,12],[13,14],[14,15],
+    [16,17],[17,18],[19,20],[20,21],[22,23],[23,24],[25,26],[26,27],[28,29],[29,30],
+    [31,32],[32,33],[34,35],[35,36],
+    [1,4],[4,7],[7,10],[10,13],[13,16],[16,19],[19,22],[22,25],[25,28],[28,31],
+    [31,34],[2,5],[5,8],[8,11],[11,14],[14,17],[17,20],[20,23],[23,26],[26,29],
+    [29,32],[32,35],[3,6],[6,9],[9,12],[12,15],[15,18],[18,21],[21,24],[24,27],
+    [27,30],[30,33],[33,36]
+  ];
+
+  const quadras = [
+    [1,2,4,5],[2,3,5,6],[4,5,7,8],[5,6,8,9],[7,8,10,11],[8,9,11,12],
+    [10,11,13,14],[11,12,14,15],[13,14,16,17],[14,15,17,18],[16,17,19,20],[17,18,20,21],
+    [19,20,22,23],[20,21,23,24],[22,23,25,26],[23,24,26,27],[25,26,28,29],[26,27,29,30],
+    [28,29,31,32],[29,30,32,33],[31,32,34,35],[32,33,35,36]
+  ];
+
+  splits.forEach(c => {
+    createSplitOrQuad([$(`.betClick[data-numero="${c[0]}"]`), $(`.betClick[data-numero="${c[1]}"]`)]);
+  });
+
+  quadras.forEach(q => {
+    createSplitOrQuad([
+      $(`.betClick[data-numero="${q[0]}"]`),
+      $(`.betClick[data-numero="${q[1]}"]`),
+      $(`.betClick[data-numero="${q[2]}"]`),
+      $(`.betClick[data-numero="${q[3]}"]`)
+    ]);
+  });
+  
+    $('.betClick').each((idx,el)=>{addDropEvt(el);});
+
+  
+  
+    // ===============================
+  // Click em apostas
+  // ===============================
+  $(document).on('click', '.betClick, .betDiv', function() {
+    const $this = $(this);
+    const nums = $this.data('numero') || $this.data('nums');
+    const valor = 1;
+
+    let existing = tableBets.find(b => b.numero === nums);
+    if (existing) existing.valor += valor;
+    else existing = { numero: nums, valor };
+
+    addChip($this, existing.valor);
+    updateBet();
+    console.log(tableBets);
+  });
+  
+  $('.btnLimpar').click(clearChip);
+  $('.btnDobrar').click(dobrarChip);
+  
+  
+
+
+
+});
+</script>
+
+  
+  
+  
 </body>
+
 </html>
