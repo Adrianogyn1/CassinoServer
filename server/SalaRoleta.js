@@ -52,7 +52,7 @@ class SalaRoleta extends SalaBase {
         await this.Esperar(10000);
 
         this.AddResultado(resultado);
-        PayoutBets(resultado);
+        this.PayoutBets(resultado);
 
         // Simula o tempo de roleta girando
         await this.Esperar(1000);
