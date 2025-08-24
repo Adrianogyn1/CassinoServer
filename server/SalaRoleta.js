@@ -64,13 +64,13 @@ class SalaRoleta extends SalaBase {
         this.bets.forEach(c => {
             let valor = 0;
             
-            c.bet.forEach(n=>{
-                if(n==result.numero)
-                valor += n.valor*36;
-            });
+            var bt =c.bet.find(el=>{el.numero == result.numero});
+            if(bt){
+                valor =bt.valor*36;
+            }
             
             //if (valor > 0) {
-            console.log("bet ganho no número"+ result.numero +", valor" + valor + c.bet.map(i=> i.numero+' valor '+i.valor));
+           // console.log("bet ganho no número"+ result.numero +", valor" + valor + c.bet.map(i=> i.numero+' valor '+i.valor));
                 this.SendPayout(c.user,  valor );
           //  }
         });
