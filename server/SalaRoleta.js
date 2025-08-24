@@ -44,7 +44,7 @@ class SalaRoleta extends SalaBase {
             numInfo: info,
             time: new Date().toISOString()
         };
-        BroadcastParcial(resizeTo);
+        BroadcastParcial(resultado);
         await this.Esperar(10000);
 
         this.AddResultado(resultado);
