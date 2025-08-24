@@ -11,6 +11,8 @@ class SalaRoleta extends SalaBase {
     }
 
     async GerarResultado() {
+        
+        /*
         const voltas = Math.floor(Math.random() * 5) + 1; // 1 a 5 voltas
         const numeros = NumInfo.numeros; // array de 0 a 36
         const whellSize = numeros.length;
@@ -28,7 +30,8 @@ class SalaRoleta extends SalaBase {
         const totalSize = whell.length;
         const relativeOffset = Math.floor(Math.random() * whellSize); // offset aleatório na última volta
         const targetIndex = ((startIndex + relativeOffset) % whellSize) + (voltas - 1) * whellSize;
-        const numero = whell[targetIndex];
+       */
+        const numero = Math.round(Math.random()*37);// whell[targetIndex];
 
         const info = new NumInfo(numero);
 
@@ -45,6 +48,7 @@ class SalaRoleta extends SalaBase {
             time: new Date().toISOString()
         };
         BroadcastParcial(resultado);
+        
         await this.Esperar(10000);
 
         this.AddResultado(resultado);
