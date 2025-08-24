@@ -484,7 +484,7 @@
         
       });
       
-      socket.on('payout', data => {
+      socket.on('payouy', data => {
         $("#modalResult").find(".modal-body").append(`Você ganhou ${data}`);
         log("ganhou "+data)
       });
@@ -617,12 +617,14 @@
         });
         
         let total = tempBets.reduce((sum, b) => sum + b.valor, 0);
-      if(lastBet != myBet){
         myBet = { numeros: tempBets, total };
+     if (JSON.stringify(lastBet) !== JSON.stringify(myBet))
+       { 
        lastBet=myBet;
         socket.emit("mybet",myBet);
+        console.log(myBet);
       }
-       console.log(myBet);
+       
       }
       
       // ===============================
