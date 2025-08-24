@@ -70,7 +70,7 @@ class SalaRoleta extends SalaBase {
             });
             
             //if (valor > 0) {
-            console.log("bet ganho no número"+ result.numero +", valor" + valor + c.vet.numeros.map(i=> i.numero+' valor '+i.valor));
+            console.log("bet ganho no número"+ result.numero +", valor" + valor + c.bet.numeros.map(i=> i.numero+' valor '+i.valor));
                 this.SendPayout(c.user,  valor );
           //  }
         });
