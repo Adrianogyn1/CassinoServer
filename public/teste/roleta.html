@@ -484,8 +484,9 @@
         
       });
       
-      socket.on('payouy', data => {
+      socket.on('payout', data => {
         $("#modalResult").find(".modal-body").append(`Você ganhou ${data}`);
+        log("ganhou "+data)
       });
       
       socket.on('tempo', data => {

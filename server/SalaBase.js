@@ -70,7 +70,7 @@ class SalaBase
     PayoutBets(result) {}
     SendPayout(user, msg) 
     {
-        if(user && user.connected)
+       // if(user && user.connected)
         user.emit("payout", msg);
     }
     

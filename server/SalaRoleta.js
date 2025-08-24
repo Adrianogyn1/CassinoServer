@@ -43,7 +43,7 @@ class SalaRoleta extends SalaBase {
 
         // Cria resultado
         const resultado = {
-            numero,
+           numero: numero,
             numInfo: info,
             time: new Date().toISOString()
         };
