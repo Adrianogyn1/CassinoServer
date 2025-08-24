@@ -66,12 +66,12 @@ class SalaRoleta extends SalaBase {
             
             c.bet.numeros.forEach(n=>{
                 if(n==result.numero)
-                valor *= n.valor;
+                valor += n.valor*36;
             });
             
-            if (valor > 0) {
+            //if (valor > 0) {
                 this.SendPayout(c.user,  valor );
-            }
+          //  }
         });
         
         // limpa apostas para próxima rodada
