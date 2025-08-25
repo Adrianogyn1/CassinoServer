@@ -6,7 +6,7 @@ class SalaFoottball extends SalaBase {
         super("foottball", nome, 20, image);
         this.banker = null;
         this.player = null;
-        this.baralho = new Baralho(6); // 6 ou 8 baralhos
+        this.baralho = new Baralho(6,'fs'); // 6 ou 8 baralhos
     }
 
     async GerarResultado() {
