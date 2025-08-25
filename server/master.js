@@ -60,10 +60,10 @@ app.get('/', (req, res) => {
 
 app.get("/login", (req, res) => {
    // const { nome } = req.body;
-
+res.sendFile(path.join(__dirname, '../public/login.html'));
     // aqui você pode validar no banco se o usuário existe
     res.cookie("user", "nome", { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 7 }); // 7 dias
-
+. 
     res.json({ message: "✅ Login bem-sucedido", user: nome });
 });
 
