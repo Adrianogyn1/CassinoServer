@@ -9,13 +9,16 @@ const cors = require('cors');
 const SalaRoleta = require('./SalaRoleta');
 const SalaBaccarat = require('./SalaBaccarat');
 const SalaBacboo = require('./SalaBacboo');
+const SalaFoottball = require('./SalaFoottball');
+const SalaFantan = require('./SalaFantan');
+
 //const User = require('./User');
 //const { pool, createUserTable } = require("./db");
 
 const app = express();
 app.use(express.json());
 app.use(cors()); // habilita CORS para todas as origens
-app.use(cookieParser());
+//app.use(cookieParser());
 
 
 //io
@@ -43,9 +46,15 @@ const salas = [
     new SalaBaccarat('Baccarat 3',"/images/bacarat_2.jpeg"),
     new SalaBaccarat('Stake Bacarat',"/images/bacarat_0.jpeg"),
   
-    new SalaBacboo('teste',"/images/bacboo_b.webp"),
+    new SalaFoottball('Foottbal Live',"/images/bacboo_i.webp"),
+    new SalaFoottball('Foottbal ao vivo',"/images/bacboo_i.webp"),
+ new SalaFoottball('Foottbal ElVivo',"/images/bacboo_i.webp"),
+ new SalaFoottball('Foottbal Turski',"/images/bacboo_i.webp"),
+ 
+    
     new SalaBacboo('Bacboo Live',"/images/bacboo_b.webp"),
-    new SalaBacboo('Bacboo ao vivo',"/images/bacboo_i.webp")
+    new SalaBacboo('Bacboo ao vivo',"/images/bacboo_i.webp"),
+    new SalaFantan('Fan tan','')
 ];
 
 // iniciar cada sala
