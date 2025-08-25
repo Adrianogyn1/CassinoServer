@@ -16,6 +16,7 @@ class SalaFantan extends SalaBase {
     
     
     
+    
     GetInfo() {
         return {
             game: this.game,
@@ -28,4 +29,4 @@ class SalaFantan extends SalaBase {
     }
 }
 
-module.exports = SalaFoottball;
+module.exports = SalaFantan;
