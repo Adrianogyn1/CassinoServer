@@ -22,8 +22,7 @@ class SalaFoottball extends SalaBase {
         };
         
         
-        let carta = this.baralho.Retirar();
-        this.player = carta;
+        this.player = this.baralho.Retirar();
         result.player = this.player;
         this.BroadcastParcial(result);
         await this.Esperar(500);
@@ -31,8 +30,7 @@ class SalaFoottball extends SalaBase {
         
         // Banker 1 cartas
         
-        let carta = this.baralho.Retirar();
-        this.banker = carta;
+        this.banker  = this.baralho.Retirar();
         result.banker = this.banker;
         this.BroadcastParcial(result);
         await this.Esperar(500);
