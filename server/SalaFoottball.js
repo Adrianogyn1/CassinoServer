@@ -34,8 +34,8 @@ class SalaFoottball extends SalaBase {
         await this.Esperar(500);
 
         // Totais
-        let pTotal = this.player.valor || 0;
-        let bTotal = this.banker.valor || 0;
+        let pTotal = this.player.valor;
+        let bTotal = this.banker.valor;
 
         // decisão final
         result.vencedor = (pTotal === bTotal) ? "d" : (pTotal > bTotal ? "p" : "b");
