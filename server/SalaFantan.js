@@ -2,7 +2,7 @@ const SalaBase = require('./SalaBase');
 
 class SalaFantan extends SalaBase {
     constructor(nome, image = "") {
-        super("foottball", nome, 20, image);
+        super("fantan", nome, 20, image);
             }
     
     async GerarResultado() {
