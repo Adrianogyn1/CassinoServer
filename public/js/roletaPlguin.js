@@ -103,9 +103,9 @@
         }
         
         // bolinha
-        const ballRadius = 10;
-        const ballX = radius + (radius - 15) * Math.cos(ballAngle);
-        const ballY = radius + (radius - 15) * Math.sin(ballAngle);
+        const ballRadius = 6;
+        const ballX = radius + (radius - 40) * Math.cos(ballAngle);
+        const ballY = radius + (radius - 40) * Math.sin(ballAngle);
         ctx.beginPath();
         ctx.arc(ballX, ballY, ballRadius, 0, 2 * Math.PI);
         ctx.fillStyle = "#ffff00";
@@ -115,7 +115,7 @@
         // círculo central externo
         const centerX = width / 2;
         const centerY = height / 2;
-        const centerRadius = ((centerX + centerY) / 2) * .7;
+        const centerRadius = ((centerX + centerY) / 2.3) * .7;
         ctx.beginPath();
         ctx.arc(centerX, centerY, centerRadius, 0, 2 * Math.PI);
         ctx.fillStyle = "#ffffff";
@@ -169,7 +169,6 @@
             $canvas.css("transform","rotateX(30deg) rotateY(0deg)");
             if (typeof settings.onFinish === "function") {
               settings.onFinish(target);
-              
             }
           }
         }

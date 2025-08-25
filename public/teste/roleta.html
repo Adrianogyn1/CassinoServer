@@ -621,7 +621,8 @@
      if (JSON.stringify(lastBet) !== JSON.stringify(myBet))
        { 
        lastBet=myBet;
-        socket.emit("mybet",myBet.numeros);
+       
+        socket.emit("mybet", myBet.numeros);
         console.log(myBet);
       }
        

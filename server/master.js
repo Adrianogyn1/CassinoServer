@@ -3,14 +3,20 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
+const cookieParser = require("cookie-parser");
+
 
 const SalaRoleta = require('./SalaRoleta');
 const SalaBaccarat = require('./SalaBaccarat');
 const SalaBacboo = require('./SalaBacboo');
+const User = require('./User');
+const { pool, createUserTable } = require("./db");
 
 const app = express();
 app.use(express.json());
 app.use(cors()); // habilita CORS para todas as origens
+app.use(cookieParser());
+
 
 //io
 const server = http.createServer(app);
@@ -21,6 +27,8 @@ const io = new Server(server, {
     }
 });
 
+
+let users = [];
 
 
 // criar salas
@@ -43,13 +51,26 @@ const salas = [
 // iniciar cada sala
 salas.forEach(s => s.Start());
 
-
 app.use(express.static(path.join(__dirname, '../public')));
 
 // Garante que '/' abra o index.html
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../public/index.html'));
 });
+
+app.get("/login", (req, res) => {
+   // const { nome } = req.body;
+
+    // aqui você pode validar no banco se o usuário existe
+    res.cookie("user", "nome", { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 7 }); // 7 dias
+
+    res.json({ message: "✅ Login bem-sucedido", user: nome });
+});
+
+
+
+
+
 
 // API para listar salas
 app.get('/api/rooms', (req, res) => {

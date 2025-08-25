@@ -9,7 +9,7 @@ class SalaRoleta extends SalaBase {
         this.total = 0;
         this.last = 0;
     }
-
+    
     async GerarResultado() {
         
         /*
@@ -31,59 +31,61 @@ class SalaRoleta extends SalaBase {
         const relativeOffset = Math.floor(Math.random() * whellSize); // offset aleatório na última volta
         const targetIndex = ((startIndex + relativeOffset) % whellSize) + (voltas - 1) * whellSize;
        */
-        const numero = Math.round(Math.random()*37);// whell[targetIndex];
-
+        const numero = Math.round(Math.random() * 37); // whell[targetIndex];
+        
         const info = new NumInfo(numero);
-
+        
         // Atualiza contadores
         if (info.color === "red") this.vermelhos++;
         if (info.color === "black") this.pretos++;
         this.total++;
         this.last = numero;
-
+        
         // Cria resultado
         const resultado = {
-           numero: numero,
+            numero: numero,
             numInfo: info,
             time: new Date().toISOString()
         };
+        //round start ui?
         this.BroadcastParcial(resultado);
-        
+        // Simula o tempo de roleta girando
         await this.Esperar(10000);
-
+        //envia o resultado 
         this.AddResultado(resultado);
         //faz o pagamento 
         this.PayoutBets(resultado);
-
-        // Simula o tempo de roleta girando
-        await this.Esperar(1000);
+        // pausa para recomeçar 20+10+2=32 total de 32 seg por rodada
+        await this.Esperar(2000);
     }
     
-
-    PayoutBets(result) {
-        this.bets.forEach(c => {
+    
+    PayoutBets(result) 
+    {
+        this.bets.forEach(c =>
+        {
             let valor = 0;
             
-            
-            
             try {
-var bt =c.bet.find(el=>{el.numero == result.numero});
-            if(bt)
-                valor =bt.valor*36;
+                var bt = c.bet.find(el => { el.numero == result.numero });
+                if (bt)
+                    valor = bt.valor * 36;
+                
+                
+                if (valor > 0) {
+                    // console.log("bet ganho no número"+ result.numero +", valor" + valor + c.bet.map(i=> i.numero+' valor '+i.valor));
+                    this.SendPayout(c.user, valor);
+                }
+                
             } catch (e) {
                 console.log(e);
             }
-            
-            //if (valor > 0) {
-           // console.log("bet ganho no número"+ result.numero +", valor" + valor + c.bet.map(i=> i.numero+' valor '+i.valor));
-                this.SendPayout(c.user,  valor );
-          //  }
         });
         
         // limpa apostas para próxima rodada
         this.bets = [];
     }
-
+    
     GetInfo() {
         return {
             total: this.total,
