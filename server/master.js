@@ -9,8 +9,8 @@ const cookieParser = require("cookie-parser");
 const SalaRoleta = require('./SalaRoleta');
 const SalaBaccarat = require('./SalaBaccarat');
 const SalaBacboo = require('./SalaBacboo');
-const User = require('./User');
-const { pool, createUserTable } = require("./db");
+//const User = require('./User');
+//const { pool, createUserTable } = require("./db");
 
 const app = express();
 app.use(express.json());
