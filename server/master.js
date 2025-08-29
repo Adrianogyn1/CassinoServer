@@ -48,10 +48,9 @@ const salas = [
   
     new SalaFoottball('Foottbal Live',"/images/bacboo_i.webp"),
     new SalaFoottball('Foottbal ao vivo',"/images/bacboo_i.webp"),
- new SalaFoottball('Foottbal ElVivo',"/images/bacboo_i.webp"),
- new SalaFoottball('Foottbal Turski',"/images/bacboo_i.webp"),
+    new SalaFoottball('Foottbal ElVivo',"/images/bacboo_i.webp"),
+    new SalaFoottball('Foottbal Turski',"/images/bacboo_i.webp"),
  
-    
     new SalaBacboo('Bacboo Live',"/images/bacboo_b.webp"),
     new SalaBacboo('Bacboo ao vivo',"/images/bacboo_i.webp"),
     new SalaFantan('Fan tan','')

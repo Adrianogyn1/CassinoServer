@@ -46,7 +46,7 @@ class SalaBacboo extends SalaBase {
         this.banker.complete = true;
         this.player.complete = true;
         this.AddResultado(result);
-        this.PayoutBets();
+        this.PayoutBets(result);
         
         await this.Esperar(2000);
     }
