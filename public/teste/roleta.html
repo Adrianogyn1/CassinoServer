@@ -461,7 +461,7 @@
         $(".game").fadeIn('slow').css("display", "flex");
         $('#roulette').fadeOut('slow').hide('slow');
         
-        let html = `${data.numInfo.numero} ${data.numInfo.cor}`;
+        let html = `${data.numInfo.numero} ${data.numInfo.color}`;
         $("#modalResult").find(".modal-body").css({"width":"500px", "height":"500px"});
         $("#modalResult").find(".modal-body").html(html);
         modal.show();

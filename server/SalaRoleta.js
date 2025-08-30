@@ -66,11 +66,14 @@ class SalaRoleta extends SalaBase {
         {
             let valor = 0;
             
-            try {
+            try 
+            {
                 var bt = c.bet.find(el =>  el.numero == result.numero )[0];
                 if (bt)
                     valor = bt.valor * 36;
-                
+                else {
+                    c.user.emit("error","nao encontado bet ")
+                }
                 
                 if (valor > 0) {
                     // console.log("bet ganho no número"+ result.numero +", valor" + valor + c.bet.map(i=> i.numero+' valor '+i.valor));
@@ -78,6 +81,7 @@ class SalaRoleta extends SalaBase {
                 }
                 
             } catch (e) {
+                c.user.emit("error",e);
                 console.log(e);
             }
         });
