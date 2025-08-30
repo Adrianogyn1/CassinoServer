@@ -72,7 +72,7 @@ class SalaRoleta extends SalaBase {
                 if (bt)
                     valor = bt.valor * 36;
                 else {
-                    c.user.emit("error","nao encontado bet ")
+                    c.user.emit("log","nao encontado bet ")
                 }
                 
                 if (valor > 0) {
@@ -81,7 +81,7 @@ class SalaRoleta extends SalaBase {
                 }
                 
             } catch (e) {
-                c.user.emit("error",e);
+                c.user.emit("log",e);
                 console.log(e);
             }
         });

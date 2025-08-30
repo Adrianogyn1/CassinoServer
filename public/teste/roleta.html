@@ -432,6 +432,7 @@
       const socket = io(url);
       
       const $history = $('#history');
+      const $historico = $('.historico');
       const $status = $('.status');
       const $error = $('#error');
       const $log = $('#log');
@@ -448,6 +449,7 @@
       // Recebe histórico completo da sala
       socket.on('history', data => {
         $history.empty();
+        $historico. empty();
         data.forEach(r => addHistorico(r.numInfo));
         log("📜 Histórico carregado (" + data.length + " itens)");
       });
@@ -501,6 +503,11 @@
         log("❌ Erro: " + (data.error || 'Erro desconhecido'));
       });
       
+      socket.on('log', data => {
+       // $error.text(data.error || 'Erro desconhecido');
+        log("😤log: " +data));
+      });
+      
       // Eventos de conexão
       socket.on("connect", () => {
         $status.text("Conectado");
@@ -535,7 +542,7 @@
       
       function addHistorico(numObj) {
         // console.log(numObj);
-        const $historico = $('.historico');
+        
         const template = $('#templateHistorico').html();
         
         // Substitui os placeholders pelo valor do objeto
