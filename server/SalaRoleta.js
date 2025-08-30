@@ -67,7 +67,7 @@ class SalaRoleta extends SalaBase {
             let valor = 0;
             
             try {
-                var bt = c.bet.find(el => { el.numero == result.numero });
+                var bt = c.bet.find(el =>  el.numero == result.numero )[0];
                 if (bt)
                     valor = bt.valor * 36;
                 
