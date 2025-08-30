@@ -60,35 +60,35 @@ class SalaRoleta extends SalaBase {
     }
     
     
-    PayoutBets(result) 
-    {
-        this.bets.forEach(c =>
-        {
-            let valor = 0;
-            
-            try 
-            {
-                var bt = c.bet.find(el =>  el.numero == result.numero )[0];
-                if (bt)
-                    valor = bt.valor * 36;
-                else {
-                    c.user.emit("log","nao encontado bet ")
-                }
-                
-                if (valor > 0) {
-                    // console.log("bet ganho no número"+ result.numero +", valor" + valor + c.bet.map(i=> i.numero+' valor '+i.valor));
-                    this.SendPayout(c.user, valor);
-                }
-                
-            } catch (e) {
-                c.user.emit("log",e);
-                console.log(e);
+    PayoutBets(result) {
+    this.bets.forEach(c => {
+        let valor = 0;
+
+        try {
+            // procura se o número sorteado está entre as apostas do usuário
+            var bt = c.bet.find(el => el.numero == result.numero);
+
+            if (bt) {
+                valor = bt.valor * 36; // multiplicador de payout
+            } else {
+                c.user.emit("log", "não encontrado bet");
             }
-        });
-        
-        // limpa apostas para próxima rodada
-        this.bets = [];
-    }
+
+            if (valor > 0) {
+                // envia payout
+                this.SendPayout(c.user, valor);
+            }
+
+        } catch (e) {
+            c.user.emit("log", e.message ?? e);
+            console.log(e);
+        }
+    });
+
+    // limpa apostas para próxima rodada
+    this.bets = [];
+}
+
     
     GetInfo() {
         return {
