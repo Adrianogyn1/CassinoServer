@@ -7,8 +7,8 @@ class SalaFantan extends SalaBase {
     
     async GerarResultado() {
         let result = {
-            numero = 0,
-            total = 50,
+            numero : 0,
+            total : 50,
             vencedor: "*",
             time: new Date().toISOString()
         };
