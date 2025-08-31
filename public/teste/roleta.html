@@ -219,17 +219,30 @@
       font-family: Arial, sans-serif;
     }
     
-    .historico .red {
+    .red {
       background-color: #ff4d4d;
+      color: #fff;
+      font-weight: bold;
+      align-items: center;
+      justify-content: center;
     }
     
-    .historico .black {
+    .black {
       background-color: #333333;
+      color: #fff;
+      font-weight: bold;
+      align-items: center;
+      justify-content: center;
     }
     
-    .historico .green {
+    .green {
       background-color: #00cc44;
+      color: #fff;
+      font-weight: bold;
+      align-items: center;
+      justify-content: center;
     }
+    
     
     #status {
       font-weight: bold;
@@ -409,18 +422,21 @@
   <div id="log"></div>
   
   
-
-<!-- Modal -->
-<div class="modal fade" id="modalResult" tabindex="-1" aria-labelledby="meuModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-            <div class="modal-body">
-        
+  
+  <!-- Modal -->
+  <div class="modal fade" id="modalResult" tabindex="-1" aria-labelledby="meuModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body align-items-end justify-content-center">
+          <hr />
+          <h5 class="numero"></h5>
+          <hr />
+          <h6 class="premio"></h6>
+        </div>
       </div>
     </div>
   </div>
-</div>
-
+  
   
   <script>
     $(document).ready(function() {
@@ -444,12 +460,21 @@
         $log.scrollTop($log[0].scrollHeight); // rola sempre pro final
       }
       
-      socket.on('registerBet', data => { log("bet aceita"); });
+      socket.on('registerBet', data => { 
+        
+        if(data.aceito){
+         log("bet aceita"); }
+        else
+        {
+          alert(data.message);
+        }
+        
+      });
       
       // Recebe histórico completo da sala
       socket.on('history', data => {
         $history.empty();
-        $historico. empty();
+        $historico.empty();
         data.forEach(r => addHistorico(r.numInfo));
         log("📜 Histórico carregado (" + data.length + " itens)");
       });
@@ -460,14 +485,20 @@
         addHistorico(data.numInfo);
         clearChip(); //limpa as fichas
         
-        $(".game").fadeIn('slow').css("display", "flex");
+        //$('#roulette').fadeOut('slow').hide('slow');
         $('#roulette').fadeOut('slow').hide('slow');
         
         let html = `${data.numInfo.numero} ${data.numInfo.color}`;
-        $("#modalResult").find(".modal-body").css({"width":"500px", "height":"500px"});
-        $("#modalResult").find(".modal-body").html(html);
+        $("#modalResult").find(".modal-body").css({ "width": "100%", "height": "100%" ,"min-height":"600px" });
+        $("#modalResult").find(".numero").addClass(data.numInfo.color).text(html);
         modal.show();
-        setTimeout(function(){modal.hide()},3000);
+        setTimeout(function() {
+          modal.hide();
+          $("#modalResult").find(".numero").removeClass(data.numInfo.color);
+          $(".game").fadeIn('slow').css("display", "flex");
+          
+        }, 3000);
+        
         
         log("🎲 Novo resultado: " + data.numInfo.numero);
       });
@@ -487,8 +518,8 @@
       });
       
       socket.on('payout', data => {
-       log("ganhou "+data);
-        $("#modalResult").find(".modal-body").append(`Você ganhou ${data}`);
+        log("ganhou " + data);
+        $("#modalResult").find(".premio").text(`Você ganhou ${data}`);
         
       });
       
@@ -504,8 +535,8 @@
       });
       
       socket.on('log', data => {
-       // $error.text(data.error || 'Erro desconhecido');
-        log("😤log: "+data);
+        // $error.text(data.error || 'Erro desconhecido');
+        log("😤log: " + data);
       });
       
       // Eventos de conexão
@@ -585,11 +616,11 @@
       // ===============================
       // Função para atualizar apostas
       // ===============================
-    
+      
       function updateBet() {
         let tempBets = [];
         tableBets = [];
-        let lastBet =[];
+        let lastBet = [];
         // Apostas individuais
         $('.betClick').not('[data-nums]').each((_, el) => {
           let $el = $(el);
@@ -626,14 +657,14 @@
         
         let total = tempBets.reduce((sum, b) => sum + b.valor, 0);
         myBet = { numeros: tempBets, total };
-     if (JSON.stringify(lastBet) !== JSON.stringify(myBet))
-       { 
-       lastBet=myBet;
-       
-        socket.emit("mybet", myBet.numeros);
-        console.log(myBet.numeros);
-      }
-       
+        if (JSON.stringify(lastBet) !== JSON.stringify(myBet))
+        {
+          lastBet = myBet;
+          
+          socket.emit("mybet", myBet.numeros);
+          console.log(myBet.numeros);
+        }
+        
       }
       
       // ===============================
@@ -940,7 +971,7 @@
         
         addChip($this, existing.valor);
         updateBet();
-       // console.log(tableBets);
+        // console.log(tableBets);
       });
       
       $('.btnLimpar').click(clearChip);

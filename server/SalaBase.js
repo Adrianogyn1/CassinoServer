@@ -64,7 +64,15 @@ class SalaBase
             myBet.bet = bet; // atualiza aposta já existente
         }
         
-        user.emit("registerBet", true);
+        if(status == "apostas_aberta")
+        {
+        user.emit("registerBet", {aceito:true, message:""});
+              
+        }
+        else 
+        {
+            user.emit("registerBet", {aceito:false, message:"Não recebido a tempo"});
+        }
     }
     
     PayoutBets(result) {}
