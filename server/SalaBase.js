@@ -64,7 +64,7 @@ class SalaBase
             myBet.bet = bet; // atualiza aposta já existente
         }
         
-        if(status == "apostas_aberta")
+        if(this.status == "apostas_aberta")
         {
         user.emit("registerBet", {aceito:true, message:""});
               
