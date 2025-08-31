@@ -14,6 +14,8 @@ class SalaBaccarat extends SalaBase {
         this.banker = [];
         this.player = [];
         
+        this.RequerePayout();
+        
         let result = {
             banker: this.banker,
             player: this.player,
@@ -98,6 +100,23 @@ class SalaBaccarat extends SalaBase {
         
         await this.Esperar(2000);
     }
+    
+    RequerePayout() {
+        
+        try {
+            this.bets.forEach(c => {
+                // soma todos os valores apostados desse usuário
+                let total = c.bet.total;
+                
+                // envia o total para o cliente
+                c.user.emit("requere-payout", total);
+            });
+        }
+        catch (e) {
+            
+        }
+    }
+    
     
     PayoutBets(result) {
         this.bets.forEach(c => {

@@ -1,11 +1,19 @@
-$(function() {
-
+$(document).ready(function() {
+    
     // ================= VARIÁVEIS =================
     let chipSelected = null;
     const bet = { player: 0, banker: 0, draw: 0, total: 0 };
     let apostaHistorico = [];
     let ultimaAposta = null;
-
+    
+    let user = carregarUser();
+    if (!user) {
+        user = { nome: "user", saldo: 1000 };
+        salvarUser(user.nome, user.saldo);
+    }
+    
+    
+    
     const $el = {
         betBoxes: $("#bet_player, #bet_banker, #bet_draw"),
         log: $("#log"),
@@ -15,14 +23,22 @@ $(function() {
         historico: $('#historico'),
         tempo: $('#tempo'),
         status: $('#status'),
-        error: $('#error')
+        error: $('#error'),
+        userName : $('.playerInfo .nome'),
+        userSaldo :$('.playerInfo .saldo'),
+        userAposta :$('.playerInfo .aposta'),
+        userLucro : $('.playerInfo .lucro'),
     };
-
+    
+    //users
+    $el.userName.text(user.nome);
+    $el.userSaldo.text(formatarBRL(user.saldo));
+    
     const params = new URLSearchParams(window.location.search);
     const $roomName = params.get('room');
     const socket = io("https://cassinoserver-production.up.railway.app");
     const myHistorico = [];
-
+    
     // ================= FUNÇÕES =================
     function salvarHistorico() {
         const estado = {};
@@ -34,7 +50,7 @@ $(function() {
         });
         apostaHistorico.push(estado);
     }
-
+    
     function updateBet() {
         $el.betBoxes.each(function() {
             const id = $(this).attr("id");
@@ -45,42 +61,46 @@ $(function() {
             if (id.includes("draw")) bet.draw = total;
         });
         bet.total = bet.player + bet.banker + bet.draw;
-
+        
+        $el.userAposta.text(formatarBRL(bet.total));
+        $el.userSaldo.text(formatarBRL(user.saldo -bet.total));
+       
         // salva histórico somente se houver mudança
         const ultimo = apostaHistorico[apostaHistorico.length - 1] || {};
-        if (!ultimo || bet.player !== (ultimo["bet_player"]||0) ||
-            bet.banker !== (ultimo["bet_banker"]||0) ||
-            bet.draw !== (ultimo["bet_draw"]||0)) {
+        if (!ultimo || bet.player !== (ultimo["bet_player"] || 0) ||
+            bet.banker !== (ultimo["bet_banker"] || 0) ||
+            bet.draw !== (ultimo["bet_draw"] || 0)) {
             salvarHistorico();
             socket.emit("mybet", bet);
         }
     }
-
+    
     function addChip(value, container) {
         const $first = container.find(".chip").first();
         if ($first.length) {
             value += parseFloat($first.data("value"));
             $first.remove();
         }
-
+        
         const $chip = $(`<div class="chip" data-value="${value}">${value}</div>`)
             .draggable({
                 helper: "original",
                 cursor: "move",
                 revert: "invalid",
                 start: (e, ui) => ui.helper.css("z-index", 1000),
-                stop: (e, ui) => { if (!ui.helper.data("dropped")) { ui.helper.remove(); updateBet(); } }
+                stop: (e, ui) => { if (!ui.helper.data("dropped")) { ui.helper.remove();
+                        updateBet(); } }
             });
-
+        
         container.append($chip);
         updateBet();
     }
-
+    
     function LimparAposta() {
         $el.betBoxes.each(function() { $(this).find(".chip").remove(); });
         updateBet();
     }
-
+    
     function DobrarAposta() {
         $el.betBoxes.each(function() {
             const $chip = $(this).find(".chip");
@@ -91,7 +111,7 @@ $(function() {
         });
         updateBet();
     }
-
+    
     function VoltarAposta() {
         if (apostaHistorico.length < 2) return;
         apostaHistorico.pop();
@@ -104,7 +124,7 @@ $(function() {
         });
         updateBet();
     }
-
+    
     function Reapostar() {
         if (!ultimaAposta) return;
         $el.betBoxes.each(function() {
@@ -114,7 +134,7 @@ $(function() {
             if (ultimaAposta[id] > 0) addChip(ultimaAposta[id], $box);
         });
     }
-
+    
     function RoundEnd() {
         if (bet.total <= 0) return;
         ultimaAposta = {};
@@ -125,16 +145,16 @@ $(function() {
         });
         LimparAposta();
     }
-
+    
     // ================= CHIP EVENTS =================
     $(".chip").click(function() { chipSelected = parseFloat($(this).data("value")); });
-
+    
     $el.betBoxes.click(function() {
-        if (!chipSelected && chipSelected <=0) return;
+        if (!chipSelected && chipSelected <= 0) return;
         const $amount = $(this).find(".bet-amount");
         addChip(chipSelected, $amount);
     });
-
+    
     $el.betBoxes.droppable({
         accept: ".chip",
         hoverClass: "border border-3 border-warning",
@@ -145,16 +165,16 @@ $(function() {
             addChip(value, $amount);
         }
     });
-
+    
     // ================= BOTÕES =================
     $("#btnRepostar").click(Reapostar);
     $("#btnVoltar").click(VoltarAposta);
     $("#btnDobrar").click(DobrarAposta);
     $("#btnLimpar").click(LimparAposta);
-
+    
     // ================= CARD & HISTORY =================
     function renderCarta(c) {
-        const cor = (c.nipe==="♥"||c.nipe==="♦") ? "text-danger":"text-dark";
+        const cor = (c.nipe === "♥" || c.nipe === "♦") ? "text-danger" : "text-dark";
         return `<div class="carta col-auto mb-2">
             <div class="card border-dark bg-white text-center d-flex flex-column justify-content-between" style="width:5rem;height:7rem">
                 <div class="d-flex justify-content-start p-1"><span class="${cor} fw-bold">${c.val}${c.nipe}</span></div>
@@ -163,64 +183,89 @@ $(function() {
             </div>
         </div>`;
     }
-
+    
     function addDeck(data) {
         $el.playerDeck.html(data.player.map(renderCarta).join(''));
         $el.bankerDeck.html(data.banker.map(renderCarta).join(''));
     }
-
-    function atualizarHistoricoBigRoad(array){
+    
+    function atualizarHistoricoBigRoad(array) {
         $el.historico.empty();
-        let lastType = null, $col;
+        let lastType = null,
+            $col;
         array.forEach(v => {
-            if(v!==lastType){
-                $col = $("<div>").css({display:"flex","flex-direction":"column-reverse",gap:"5px","align-items":"center"});
+            if (v !== lastType) {
+                $col = $("<div>").css({ display: "flex", "flex-direction": "column-reverse", gap: "5px", "align-items": "center" });
                 $el.historico.append($col);
                 lastType = v;
             }
             $("<div>").addClass("bead").css({
-                width:"20px", height:"20px", "border-radius":"50%", display:"flex",
-                "align-items":"center","justify-content":"center", color:"#fff",
-                "font-weight":"bold", position:"relative",
-                "background-color":v==='b'?'red':v==='p'?'blue':'transparent'
+                width: "20px",
+                height: "20px",
+                "border-radius": "50%",
+                display: "flex",
+                "align-items": "center",
+                "justify-content": "center",
+                color: "#fff",
+                "font-weight": "bold",
+                position: "relative",
+                "background-color": v === 'b' ? 'red' : v === 'p' ? 'blue' : 'transparent'
             }).text(v.toUpperCase()).appendTo($col);
         });
         $el.historico.scrollLeft($el.historico[0].scrollWidth);
     }
-
-    function log(msg){ $el.log.append(`<div>${msg}</div>`); $el.log.scrollTop($el.log[0].scrollHeight); }
-
+    
+    function log(msg) { $el.log.append(`<div>${msg}</div>`);
+        $el.log.scrollTop($el.log[0].scrollHeight); }
+    
     // ================= SOCKET =================
-    socket.on('connect', () => { 
-        $el.status.text("Conectado"); 
-        socket.emit("joinRoom",$roomName); 
+    socket.on('connect', () => {
+        $el.status.text("Conectado");
+        socket.emit("joinRoom", $roomName);
         log(`✅ Conectado (ID:${socket.id})`);
     });
-    socket.on('disconnect', ()=> $el.status.text("Desconectado"));
+    socket.on('disconnect', () => $el.status.text("Desconectado"));
     socket.on('connect_error', err => $el.status.text(`Erro: ${err.message}`));
     socket.on('reconnect_attempt', a => $el.status.text(`Reconectando... #${a}`));
-
+    
     socket.on('history', data => {
         myHistorico.push(...data);
-        atualizarHistoricoBigRoad(myHistorico.map(c=>c.vencedor));
-        $el.history.html(data.map(r=>`<b>${r.vencedor}</b>`).join(''));
+        atualizarHistoricoBigRoad(myHistorico.map(c => c.vencedor));
+        $el.history.html(data.map(r => `<b>${r.vencedor}</b>`).join(''));
         log(`📜 Histórico carregado (${data.length})`);
     });
-
+    
     socket.on('newResult', data => {
         addDeck(data);
         myHistorico.push(data);
-        atualizarHistoricoBigRoad(myHistorico.map(c=>c.vencedor));
-        setTimeout(()=>{$el.playerDeck.empty(); $el.bankerDeck.empty();},4000);
+        atualizarHistoricoBigRoad(myHistorico.map(c => c.vencedor));
+        setTimeout(() => { $el.playerDeck.empty();
+            $el.bankerDeck.empty(); }, 4000);
         RoundEnd(); // salva ultima aposta e limpa fichas
         log(`🎲 Novo resultado ${data.vencedor}`);
     });
-
+    
     socket.on('registerBet', data => { log("bet aceita"); });
-    socket.on('payout', data => { log("ganhou: "+data); });
+    socket.on('payout', data => { 
+        log("ganhou: " + data); 
+        user.saldo+=data;
+        salvarSaldo(user.saldo);
+        $el.userSaldo.text(formatarBRL(user.saldo));
+    });
+    
+    socket.on('requere-payout', data => {
+       log("requere"+data);
+        user.saldo -= data;
+        salvarSaldo(user.saldo);
+        $el.userSaldo.text(formatarBRL(user.saldo));
+      });
+    
+    
+    
+    
     socket.on('round', addDeck);
     socket.on('tempo', data => $el.tempo.text(data));
     socket.on('status', data => $el.status.text(data));
-    socket.on('error', data => $el.error.text(data.error||data));
-
+    socket.on('error', data => $el.error.text(data.error || data));
+    
 });

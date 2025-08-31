@@ -64,37 +64,39 @@ class SalaBase
             myBet.bet = bet; // atualiza aposta já existente
         }
         
-        if(this.status == "apostas_aberta")
+        if (this.status == "apostas_aberta")
         {
-        user.emit("registerBet", {aceito:true, message:""});
-              
+            user.emit("registerBet", { aceito: true, message: "" });
+            
         }
-        else 
+        else
         {
-            user.emit("registerBet", {aceito:false, message:"Não recebido a tempo"});
+            user.emit("registerBet", { aceito: false, message: "Não recebido a tempo" });
         }
     }
     
     PayoutBets(result) {}
-    SendPayout(user, msg) 
+    SendPayout(user, msg)
     {
-       // if(user && user.connected)
+        // if(user && user.connected)
         user.emit("payout", msg);
     }
     
     RequerePayout() {
-    
-    try{this.bets.forEach(c => {
-        // soma todos os valores apostados desse usuário
-        let total = c.bet.reduce((acc, m) => acc + m.valor, 0);
         
-        // envia o total para o cliente
-        c.user.emit("requere-payout", total);
-    });}
-    catch (e) {
-
+        try {
+            this.bets.forEach(c => {
+                // soma todos os valores apostados desse usuário
+                let total = c.bet.reduce((acc, m) => acc + m.valor, 0);
+                
+                // envia o total para o cliente
+                c.user.emit("requere-payout", total);
+            });
+        }
+        catch (e) {
+            
+        }
     }
-}
     
     
     async Start() {
