@@ -31,7 +31,10 @@ class SalaRoleta extends SalaBase {
         const relativeOffset = Math.floor(Math.random() * whellSize); // offset aleatório na última volta
         const targetIndex = ((startIndex + relativeOffset) % whellSize) + (voltas - 1) * whellSize;
        */
-        const numero = Math.round(Math.random() * 37); // whell[targetIndex];
+       
+       this.RequerePayout();
+       
+        const numero = Math.round(Math.random() * 36); // whell[targetIndex];
         
         const info = new NumInfo(numero);
         

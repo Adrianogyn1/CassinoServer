@@ -82,6 +82,20 @@ class SalaBase
         user.emit("payout", msg);
     }
     
+    RequerePayout() {
+    
+    try{this.bets.forEach(c => {
+        // soma todos os valores apostados desse usuário
+        let total = c.bet.reduce((acc, m) => acc + m.valor, 0);
+        
+        // envia o total para o cliente
+        c.user.emit("requere-payout", total);
+    });}
+    catch (e) {
+
+    }
+}
+    
     
     async Start() {
         while (true) {
