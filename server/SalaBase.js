@@ -25,7 +25,7 @@ class SalaBase
     
     AddResultado(resultado) {
         this.history.push(resultado);
-        if (this.history.length > 20) this.history.shift();
+        if (this.history.length > 100) this.history.shift();
         this.forEachUser(user => user.emit('newResult', resultado));
     }
     

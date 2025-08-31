@@ -178,6 +178,8 @@ $(document).ready(function() {
     
     // ================= CARD & HISTORY =================
     function renderCarta(c) {
+        //console.log(c);
+        if(!c)return"";
         const cor = (c.nipe === "♥" || c.nipe === "♦") ? "text-danger" : "text-dark";
         return `<div class="carta col-auto mb-2">
             <div class="card border-dark bg-white text-center d-flex flex-column justify-content-between">
@@ -189,8 +191,8 @@ $(document).ready(function() {
     }
     
     function addDeck(data) {
-        $el.playerDeck.html(data.player.map(renderCarta).join(''));
-        $el.bankerDeck.html(data.banker.map(renderCarta).join(''));
+        $el.playerDeck.html(renderCarta(data.player));
+        $el.bankerDeck.html(renderCarta(data.banker));
     }
     
     function atualizarHistoricoBigRoad(array) {

@@ -13,7 +13,7 @@ class SalaFantan extends SalaBase {
             time: new Date().toISOString()
         };
         
-        let sorteio = Math.floor(Math.random() * 4) + 1;
+        let sorteio = Math.floor(Math.random() * 3) + 1;
         result.total += sorteio;
         this.BroadcastParcial(result);
         await this.Esperar(5000);

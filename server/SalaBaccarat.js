@@ -1,8 +1,10 @@
 const SalaBase = require('./SalaBase');
 const { Baralho } = require("./cartas.js");
 
-class SalaBaccarat extends SalaBase {
-    constructor(nome, image = "") {
+class SalaBaccarat extends SalaBase 
+{
+    constructor(nome, image = "") 
+    {
         super("baccarat", nome, 20, image);
         this.banker = [];
         this.player = [];
@@ -101,9 +103,10 @@ class SalaBaccarat extends SalaBase {
         await this.Esperar(2000);
     }
     
-    RequerePayout() {
-        
-        try {
+    RequerePayout()
+    {
+        try 
+        {
             this.bets.forEach(c => {
                 // soma todos os valores apostados desse usuário
                 let total = c.bet.total;
